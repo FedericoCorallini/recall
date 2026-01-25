@@ -3,7 +3,9 @@ package com.fcorallini.recall.home.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fcorallini.recall.core.common.Result
+import com.fcorallini.recall.core.model.PdfSource
 import com.fcorallini.recall.home.domain.usecase.GenerateFromPdfUseCase
+import com.fcorallini.recall.home.domain.usecase.ObservePdfSourcesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,11 +22,27 @@ sealed class HomeUiState {
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val generateFromPdfUseCase: GenerateFromPdfUseCase
+    private val generateFromPdfUseCase: GenerateFromPdfUseCase,
+    private val observePdfSourcesUseCase: ObservePdfSourcesUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Idle)
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
+
+    private val _pdfSources = MutableStateFlow<List<PdfSource>>(emptyList())
+    val pdfSources: StateFlow<List<PdfSource>> = _pdfSources.asStateFlow()
+
+    init {
+        observePdfSources()
+    }
+
+    private fun observePdfSources() {
+        viewModelScope.launch {
+            observePdfSourcesUseCase().collect { sources ->
+                _pdfSources.value = sources
+            }
+        }
+    }
 
     fun generateFromPdf(uriString: String) {
         viewModelScope.launch {

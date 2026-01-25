@@ -34,7 +34,8 @@ sealed class QuizUiState {
 class QuizViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val observeQuestionsUseCase: ObserveQuestionsBySourceUseCase,
-    private val submitAnswerUseCase: SubmitAnswerUseCase
+    private val submitAnswerUseCase: SubmitAnswerUseCase,
+    private val updatePdfSourceStatsUseCase: com.fcorallini.recall.quiz.domain.usecase.UpdatePdfSourceStatsUseCase
 ) : ViewModel() {
 
     private val sourceId: String = savedStateHandle["sourceId"] ?: ""
@@ -75,6 +76,15 @@ class QuizViewModel @Inject constructor(
                 isSubmitting = false
             )
         } else {
+            // Quiz completed - update PDF source stats
+            viewModelScope.launch {
+                updatePdfSourceStatsUseCase(
+                    sourceId = sourceId,
+                    correctCount = correctAnswersCount,
+                    totalCount = questions.size
+                )
+            }
+            
             _uiState.value = QuizUiState.Summary(
                 correctCount = correctAnswersCount,
                 totalCount = questions.size

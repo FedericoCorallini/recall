@@ -11,7 +11,7 @@ import com.fcorallini.recall.core.db.entity.QuestionEntity
 
 @Database(
     entities = [PdfSourceEntity::class, QuestionEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

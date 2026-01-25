@@ -1,14 +1,28 @@
-# 📚 Recall - Quiz Generator App (MVP)
+# 📚 Recall - Quiz Generator App
 
 An Android app that creates and runs quizzes/flashcards from PDFs using Kotlin and Jetpack Compose.
 
 ## Overview
 
-Recall is an educational app that transforms PDF documents into interactive quizzes and flashcards. This MVP version includes a mocked question generation system, designed to be easily extended with real AI-powered PDF parsing in future iterations.
+Recall is an educational app that transforms PDF documents into interactive quizzes and flashcards. This version includes a mocked question generation system with comprehensive statistics tracking, designed to be easily extended with real AI-powered PDF parsing in future iterations.
 
-## Features (Iteration 1)
+## Features
+
+### Iteration 2 (Current) ✨
 
 ### Home Screen
+- **PDF Source Library**: View all previously uploaded PDFs in a scrollable list
+- **Practice Statistics**: Each PDF shows:
+  - Number of times practiced
+  - Average score percentage
+  - Last practice time (relative: "2 hours ago", "3 days ago")
+- **Empty State**: Clean onboarding screen when no PDFs have been uploaded
+- **Quick Actions**: 
+  - Tap any PDF card to repeat the quiz
+  - Floating Action Button (FAB) to upload new PDFs
+- Real-time updates when quiz statistics change
+
+### Iteration 1
 - Clean, modern UI with Material 3 design
 - PDF file picker integration (restricted to application/pdf)
 - Automatic quiz generation from selected PDFs
@@ -80,7 +94,10 @@ data class PdfSource(
     val id: String,
     val displayName: String,
     val uriString: String,
-    val createdAtEpochMs: Long
+    val createdAtEpochMs: Long,
+    val practiceCount: Int = 0,           // Number of times quiz was completed
+    val lastPracticedEpochMs: Long? = null, // Timestamp of last practice
+    val averageScore: Float = 0f          // Running average (0.0 to 1.0)
 )
 
 data class Question(
@@ -172,7 +189,10 @@ CREATE TABLE pdf_sources (
     id TEXT PRIMARY KEY,
     displayName TEXT NOT NULL,
     uriString TEXT NOT NULL,
-    createdAtEpochMs INTEGER NOT NULL
+    createdAtEpochMs INTEGER NOT NULL,
+    practiceCount INTEGER NOT NULL DEFAULT 0,
+    lastPracticedEpochMs INTEGER,
+    averageScore REAL NOT NULL DEFAULT 0.0
 )
 ```
 
@@ -193,16 +213,37 @@ CREATE TABLE questions (
 )
 ```
 
+## Recent Changes (Iteration 2)
+
+### What's New
+- ✅ **PDF Library View**: See all your quiz sources in one place
+- ✅ **Practice Tracking**: Automatic statistics for each PDF source
+- ✅ **Average Score Calculation**: Running average of all quiz attempts
+- ✅ **Relative Time Display**: Human-readable last practice time
+- ✅ **Quick Restart**: Tap any PDF card to practice again
+- ✅ **Database Schema V2**: Added practice statistics to PdfSource table
+
+### Technical Implementation
+- Added `ObservePdfSourcesUseCase` to watch PDF source changes
+- Implemented `UpdatePdfSourceStatsUseCase` to update statistics after quiz completion
+- Extended `QuizViewModel` to automatically update source stats on quiz end
+- Redesigned `HomeScreen` with LazyColumn for scrollable list
+- Added FAB for new uploads when sources exist
+- Database migration from v1 to v2 with `fallbackToDestructiveMigration`
+
 ## Future Enhancements
 
-### Iteration 2+
+### Iteration 3+
 - [ ] Real PDF text extraction
 - [ ] AI-powered question generation (OpenAI/Gemini)
 - [ ] Question difficulty levels
-- [ ] Spaced repetition algorithm
-- [ ] History screen showing past quizzes
-- [ ] Export quiz results
-- [ ] Dark mode support
+- [ ] Spaced repetition algorithm based on individual question performance
+- [ ] Detailed history screen showing past quiz sessions with timestamps
+- [ ] Export quiz results to CSV/PDF
+- [ ] Search and filter PDFs
+- [ ] Sort by: Most Recent, Highest Score, Most Practiced
+- [ ] Delete PDF sources
+- [ ] Edit question content
 - [ ] Multi-language support
 
 ## License

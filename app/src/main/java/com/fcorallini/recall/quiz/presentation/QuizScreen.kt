@@ -28,9 +28,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.fcorallini.recall.core.model.Question
+import com.fcorallini.recall.core.model.QuestionStats
 import com.fcorallini.recall.core.model.QuestionType
+import com.fcorallini.recall.ui.theme.RecallTheme
 
 @Composable
 fun QuizScreen(
@@ -268,6 +272,220 @@ private fun SummaryContent(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Back to Home")
+        }
+    }
+}
+
+// ==================== PREVIEWS ====================
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+private fun QuizMultipleChoicePreview() {
+    RecallTheme {
+        val sampleQuestion = Question(
+            id = "1",
+            sourceId = "source1",
+            type = QuestionType.MULTIPLE_CHOICE,
+            prompt = "Which of the following is the correct way to launch a coroutine in Kotlin?",
+            options = listOf(
+                "launch { }",
+                "async { }",
+                "runBlocking { }",
+                "All of the above"
+            ),
+            answer = "All of the above",
+            stats = QuestionStats()
+        )
+        
+        val state = QuizUiState.Quiz(
+            currentQuestion = sampleQuestion,
+            currentIndex = 0,
+            totalQuestions = 6,
+            userAnswer = "launch { }",
+            isSubmitting = false
+        )
+        
+        Scaffold { paddingValues ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                QuizContent(
+                    state = state,
+                    onAnswerChange = {},
+                    onSubmit = {}
+                )
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+private fun QuizFlashcardPreview() {
+    RecallTheme {
+        val sampleQuestion = Question(
+            id = "2",
+            sourceId = "source1",
+            type = QuestionType.FLASHCARD,
+            prompt = "What does SOLID stand for in software engineering principles?",
+            options = emptyList(),
+            answer = "Single Responsibility, Open-Closed, Liskov Substitution, Interface Segregation, Dependency Inversion",
+            stats = QuestionStats()
+        )
+        
+        val state = QuizUiState.Quiz(
+            currentQuestion = sampleQuestion,
+            currentIndex = 4,
+            totalQuestions = 6,
+            userAnswer = "Single Responsibility, Open-Closed",
+            isSubmitting = false
+        )
+        
+        Scaffold { paddingValues ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                QuizContent(
+                    state = state,
+                    onAnswerChange = {},
+                    onSubmit = {}
+                )
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+private fun QuizSummaryPreview() {
+    RecallTheme {
+        val state = QuizUiState.Summary(
+            correctCount = 5,
+            totalCount = 6
+        )
+        
+        Scaffold { paddingValues ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                SummaryContent(
+                    state = state,
+                    onBackToHome = {}
+                )
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+private fun QuizLoadingPreview() {
+    RecallTheme {
+        Scaffold { paddingValues ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true, name = "Quiz - Dark Mode", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun QuizMultipleChoiceDarkPreview() {
+    RecallTheme {
+        val sampleQuestion = Question(
+            id = "1",
+            sourceId = "source1",
+            type = QuestionType.MULTIPLE_CHOICE,
+            prompt = "In Clean Architecture, which layer contains business logic?",
+            options = listOf(
+                "Presentation layer",
+                "Domain layer",
+                "Data layer",
+                "Infrastructure layer"
+            ),
+            answer = "Domain layer",
+            stats = QuestionStats()
+        )
+        
+        val state = QuizUiState.Quiz(
+            currentQuestion = sampleQuestion,
+            currentIndex = 2,
+            totalQuestions = 6,
+            userAnswer = "Domain layer",
+            isSubmitting = false
+        )
+        
+        Scaffold { paddingValues ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                QuizContent(
+                    state = state,
+                    onAnswerChange = {},
+                    onSubmit = {}
+                )
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+private fun QuizSubmittingPreview() {
+    RecallTheme {
+        val sampleQuestion = Question(
+            id = "3",
+            sourceId = "source1",
+            type = QuestionType.MULTIPLE_CHOICE,
+            prompt = "What HTTP status code indicates a successful GET request?",
+            options = listOf(
+                "200 OK",
+                "201 Created",
+                "204 No Content",
+                "404 Not Found"
+            ),
+            answer = "200 OK",
+            stats = QuestionStats()
+        )
+        
+        val state = QuizUiState.Quiz(
+            currentQuestion = sampleQuestion,
+            currentIndex = 1,
+            totalQuestions = 6,
+            userAnswer = "200 OK",
+            isSubmitting = true
+        )
+        
+        Scaffold { paddingValues ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                QuizContent(
+                    state = state,
+                    onAnswerChange = {},
+                    onSubmit = {}
+                )
+            }
         }
     }
 }

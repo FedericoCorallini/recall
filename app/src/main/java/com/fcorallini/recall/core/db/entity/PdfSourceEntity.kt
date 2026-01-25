@@ -10,19 +10,28 @@ data class PdfSourceEntity(
     val id: String,
     val displayName: String,
     val uriString: String,
-    val createdAtEpochMs: Long
+    val createdAtEpochMs: Long,
+    val practiceCount: Int = 0,
+    val lastPracticedEpochMs: Long? = null,
+    val averageScore: Float = 0f
 )
 
 fun PdfSourceEntity.toDomain(): PdfSource = PdfSource(
     id = id,
     displayName = displayName,
     uriString = uriString,
-    createdAtEpochMs = createdAtEpochMs
+    createdAtEpochMs = createdAtEpochMs,
+    practiceCount = practiceCount,
+    lastPracticedEpochMs = lastPracticedEpochMs,
+    averageScore = averageScore
 )
 
 fun PdfSource.toEntity(): PdfSourceEntity = PdfSourceEntity(
     id = id,
     displayName = displayName,
     uriString = uriString,
-    createdAtEpochMs = createdAtEpochMs
+    createdAtEpochMs = createdAtEpochMs,
+    practiceCount = practiceCount,
+    lastPracticedEpochMs = lastPracticedEpochMs,
+    averageScore = averageScore
 )

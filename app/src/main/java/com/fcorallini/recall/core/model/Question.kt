@@ -5,7 +5,7 @@ data class Question(
     val sourceId: String,
     val type: QuestionType,
     val prompt: String,
-    val options: List<String>,  // emptyList for flashcards
-    val answer: String,         // correct answer text
+    val options: List<String>,
+    val answer: String,
     val stats: QuestionStats
 )
