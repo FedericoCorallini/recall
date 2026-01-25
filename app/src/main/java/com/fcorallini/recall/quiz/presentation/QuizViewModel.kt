@@ -1,0 +1,129 @@
+package com.fcorallini.recall.quiz.presentation
+
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.fcorallini.recall.core.common.Result
+import com.fcorallini.recall.core.model.Question
+import com.fcorallini.recall.quiz.domain.usecase.ObserveQuestionsBySourceUseCase
+import com.fcorallini.recall.quiz.domain.usecase.SubmitAnswerUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+sealed class QuizUiState {
+    data object Loading : QuizUiState()
+    data class Quiz(
+        val currentQuestion: Question,
+        val currentIndex: Int,
+        val totalQuestions: Int,
+        val userAnswer: String = "",
+        val isSubmitting: Boolean = false
+    ) : QuizUiState()
+    data class Summary(
+        val correctCount: Int,
+        val totalCount: Int
+    ) : QuizUiState()
+    data class Error(val message: String) : QuizUiState()
+}
+
+@HiltViewModel
+class QuizViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
+    private val observeQuestionsUseCase: ObserveQuestionsBySourceUseCase,
+    private val submitAnswerUseCase: SubmitAnswerUseCase
+) : ViewModel() {
+
+    private val sourceId: String = savedStateHandle["sourceId"] ?: ""
+
+    private val _uiState = MutableStateFlow<QuizUiState>(QuizUiState.Loading)
+    val uiState: StateFlow<QuizUiState> = _uiState.asStateFlow()
+
+    private var questions: List<Question> = emptyList()
+    private var currentQuestionIndex = 0
+    private var correctAnswersCount = 0
+
+    init {
+        loadQuestions()
+    }
+
+    private fun loadQuestions() {
+        viewModelScope.launch {
+            observeQuestionsUseCase(sourceId).collect { questionList ->
+                if (questionList.isEmpty()) {
+                    _uiState.value = QuizUiState.Error("No questions found for this source")
+                } else {
+                    questions = questionList
+                    if (_uiState.value is QuizUiState.Loading) {
+                        showCurrentQuestion()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun showCurrentQuestion() {
+        if (currentQuestionIndex < questions.size) {
+            _uiState.value = QuizUiState.Quiz(
+                currentQuestion = questions[currentQuestionIndex],
+                currentIndex = currentQuestionIndex,
+                totalQuestions = questions.size,
+                userAnswer = "",
+                isSubmitting = false
+            )
+        } else {
+            _uiState.value = QuizUiState.Summary(
+                correctCount = correctAnswersCount,
+                totalCount = questions.size
+            )
+        }
+    }
+
+    fun updateUserAnswer(answer: String) {
+        val currentState = _uiState.value
+        if (currentState is QuizUiState.Quiz) {
+            _uiState.value = currentState.copy(userAnswer = answer)
+        }
+    }
+
+    fun submitAnswer() {
+        val currentState = _uiState.value
+        if (currentState !is QuizUiState.Quiz || currentState.userAnswer.isBlank()) {
+            return
+        }
+
+        viewModelScope.launch {
+            _uiState.value = currentState.copy(isSubmitting = true)
+
+            val result = submitAnswerUseCase(
+                questionId = currentState.currentQuestion.id,
+                userAnswer = currentState.userAnswer
+            )
+
+            when (result) {
+                is Result.Success -> {
+                    // Check if answer was correct
+                    val isCorrect = currentState.userAnswer.trim().equals(
+                        currentState.currentQuestion.answer.trim(),
+                        ignoreCase = true
+                    )
+                    if (isCorrect) {
+                        correctAnswersCount++
+                    }
+
+                    // Move to next question
+                    currentQuestionIndex++
+                    showCurrentQuestion()
+                }
+                is Result.Error -> {
+                    _uiState.value = QuizUiState.Error(
+                        result.exception.message ?: "Failed to submit answer"
+                    )
+                }
+            }
+        }
+    }
+}
