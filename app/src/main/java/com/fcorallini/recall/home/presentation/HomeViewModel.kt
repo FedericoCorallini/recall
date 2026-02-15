@@ -13,13 +13,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-sealed class HomeUiState {
-    data object Idle : HomeUiState()
-    data object Loading : HomeUiState()
-    data class Success(val sourceId: String) : HomeUiState()
-    data class Error(val message: String) : HomeUiState()
-}
-
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val generateFromPdfUseCase: GenerateFromPdfUseCase,

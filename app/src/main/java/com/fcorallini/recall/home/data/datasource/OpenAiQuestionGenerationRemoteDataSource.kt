@@ -85,9 +85,8 @@ class OpenAiQuestionGenerationRemoteDataSource @Inject constructor(
             val filePart = MultipartBody.Part.createFormData("file", filename, requestBody)
             val purposeBody = FILE_PURPOSE.toRequestBody("text/plain".toMediaType())
             
-//            val response = openAiService.uploadFile(filePart, purposeBody)
-//            return response.id
-            return "file-13UX6qHJRSZqxPdsUy8x5p"
+            val response = openAiService.uploadFile(filePart, purposeBody)
+            return response.id
         } finally {
             tempFile.delete()
         }
