@@ -1,6 +1,8 @@
 package com.fcorallini.recall.home.data.extractor
 
 import android.content.Context
+import android.graphics.pdf.PdfRenderer
+import android.os.ParcelFileDescriptor
 import android.provider.OpenableColumns
 import androidx.core.net.toUri
 import com.fcorallini.recall.core.data.common.DispatchersProvider
@@ -8,6 +10,7 @@ import com.fcorallini.recall.core.data.common.readBytesFromUri
 import com.fcorallini.recall.home.domain.extractor.PdfContentExtractor
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.withContext
+import java.io.IOException
 import javax.inject.Inject
 
 class PdfContentExtractorImpl @Inject constructor(
@@ -38,6 +41,25 @@ class PdfContentExtractorImpl @Inject constructor(
             displayName ?: uri.lastPathSegment ?: "Unknown PDF"
         } catch (e: Exception) {
             "Unknown PDF"
+        }
+    }
+
+    override suspend fun getPageCount(uriString: String): Int = withContext(dispatchers.io) {
+        val uri = uriString.toUri()
+        var renderer: PdfRenderer? = null
+        var pfd: ParcelFileDescriptor? = null
+
+        try {
+            pfd = context.contentResolver.openFileDescriptor(uri, "r")
+                ?: throw IOException("Could not open PDF: $uriString")
+
+            renderer = PdfRenderer(pfd)
+            renderer.pageCount
+        } catch (e: Exception) {
+            throw IOException("Failed to get page count: ${e.message}", e)
+        } finally {
+            renderer?.close()
+            pfd?.close()
         }
     }
 }

@@ -35,9 +35,15 @@ class QuestionRepositoryImpl @Inject constructor(
     override suspend fun generateQuestionsFromPdf(
         pdfBytes: ByteArray,
         filename: String,
-        sourceId: String
+        sourceId: String,
+        questionCount: Int
     ): List<Question> {
-        return openAiQuestionGenerator.generateQuestionsFromPdf(pdfBytes, filename, sourceId)
+        return openAiQuestionGenerator.generateQuestionsFromPdf(
+            pdfBytes = pdfBytes, 
+            filename = filename, 
+            sourceId = sourceId,
+            questionCount = questionCount
+        )
     }
 
     override suspend fun submitAnswer(questionId: String, userAnswer: String): Result<Unit> =
