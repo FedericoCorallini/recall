@@ -1,4 +1,4 @@
-package com.fcorallini.recall.core.navigation
+package com.fcorallini.recall.core.presentation.navigation
 
 sealed class Route(val path: String) {
     data object Home : Route("home")

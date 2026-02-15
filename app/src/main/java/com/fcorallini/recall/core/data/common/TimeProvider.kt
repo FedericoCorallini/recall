@@ -1,4 +1,4 @@
-package com.fcorallini.recall.core.common
+package com.fcorallini.recall.core.data.common
 
 interface TimeProvider {
     fun currentTimeMillis(): Long

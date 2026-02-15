@@ -1,6 +1,6 @@
 package com.fcorallini.recall.home.presentation
 
-import com.fcorallini.recall.core.model.PdfSource
+import com.fcorallini.recall.core.domain.model.PdfSource
 
 data class HomeState(
     val pdfSources: List<PdfSource> = emptyList(),

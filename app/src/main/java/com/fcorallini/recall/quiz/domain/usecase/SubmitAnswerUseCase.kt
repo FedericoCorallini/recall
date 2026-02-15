@@ -1,7 +1,7 @@
 package com.fcorallini.recall.quiz.domain.usecase
 
-import com.fcorallini.recall.core.common.Result
-import com.fcorallini.recall.home.domain.repository.QuestionRepository
+import com.fcorallini.recall.core.data.common.Result
+import com.fcorallini.recall.core.domain.repository.QuestionRepository
 import javax.inject.Inject
 
 class SubmitAnswerUseCase @Inject constructor(

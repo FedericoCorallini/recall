@@ -1,7 +1,7 @@
 package com.fcorallini.recall.di
 
 import com.fcorallini.recall.BuildConfig
-import com.fcorallini.recall.core.common.ApiKeyProvider
+import com.fcorallini.recall.core.data.common.ApiKeyProvider
 import com.fcorallini.recall.home.data.openai.OpenAiQuestionGenerator
 import com.fcorallini.recall.home.data.openai.OpenAiService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory

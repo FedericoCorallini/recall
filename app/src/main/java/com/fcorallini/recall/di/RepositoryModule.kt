@@ -1,11 +1,11 @@
 package com.fcorallini.recall.di
 
 import com.fcorallini.recall.home.data.extractor.PdfContentExtractorImpl
-import com.fcorallini.recall.home.data.repository.PdfSourceRepositoryImpl
-import com.fcorallini.recall.home.data.repository.QuestionRepositoryImpl
+import com.fcorallini.recall.core.data.repository.PdfSourceRepositoryImpl
+import com.fcorallini.recall.core.data.repository.QuestionRepositoryImpl
 import com.fcorallini.recall.home.domain.extractor.PdfContentExtractor
-import com.fcorallini.recall.home.domain.repository.PdfSourceRepository
-import com.fcorallini.recall.home.domain.repository.QuestionRepository
+import com.fcorallini.recall.core.domain.repository.PdfSourceRepository
+import com.fcorallini.recall.core.domain.repository.QuestionRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

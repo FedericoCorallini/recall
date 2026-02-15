@@ -1,7 +1,7 @@
-package com.fcorallini.recall.home.domain.repository
+package com.fcorallini.recall.core.domain.repository
 
-import com.fcorallini.recall.core.common.Result
-import com.fcorallini.recall.core.model.Question
+import com.fcorallini.recall.core.data.common.Result
+import com.fcorallini.recall.core.domain.model.Question
 import kotlinx.coroutines.flow.Flow
 
 interface QuestionRepository {

@@ -1,4 +1,4 @@
-package com.fcorallini.recall.core.common
+package com.fcorallini.recall.core.data.common
 
 import com.fcorallini.recall.BuildConfig
 import javax.inject.Inject

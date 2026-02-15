@@ -2,8 +2,7 @@ package com.fcorallini.recall.home.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fcorallini.recall.core.common.Result
-import com.fcorallini.recall.core.model.PdfSource
+import com.fcorallini.recall.core.data.common.Result
 import com.fcorallini.recall.home.domain.usecase.GenerateQuizFromPdfUseCase
 import com.fcorallini.recall.home.domain.usecase.ObservePdfSourcesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel

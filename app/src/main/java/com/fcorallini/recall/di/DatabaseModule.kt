@@ -2,9 +2,9 @@ package com.fcorallini.recall.di
 
 import android.content.Context
 import androidx.room.Room
-import com.fcorallini.recall.core.db.RecallDatabase
-import com.fcorallini.recall.core.db.dao.PdfSourceDao
-import com.fcorallini.recall.core.db.dao.QuestionDao
+import com.fcorallini.recall.core.data.db.RecallDatabase
+import com.fcorallini.recall.core.data.db.dao.PdfSourceDao
+import com.fcorallini.recall.core.data.db.dao.QuestionDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

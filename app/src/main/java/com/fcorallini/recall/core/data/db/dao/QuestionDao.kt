@@ -1,11 +1,11 @@
-package com.fcorallini.recall.core.db.dao
+package com.fcorallini.recall.core.data.db.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.fcorallini.recall.core.db.entity.QuestionEntity
+import com.fcorallini.recall.core.data.db.entity.QuestionEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

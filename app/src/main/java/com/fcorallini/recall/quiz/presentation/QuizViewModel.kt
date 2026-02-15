@@ -3,8 +3,8 @@ package com.fcorallini.recall.quiz.presentation
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fcorallini.recall.core.common.Result
-import com.fcorallini.recall.core.model.Question
+import com.fcorallini.recall.core.data.common.Result
+import com.fcorallini.recall.core.domain.model.Question
 import com.fcorallini.recall.quiz.domain.usecase.ObserveQuestionsBySourceUseCase
 import com.fcorallini.recall.quiz.domain.usecase.SubmitAnswerUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel

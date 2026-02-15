@@ -1,9 +1,9 @@
 package com.fcorallini.recall.home.data.openai
 
 import android.util.Log
-import com.fcorallini.recall.core.model.Question
-import com.fcorallini.recall.core.model.QuestionStats
-import com.fcorallini.recall.core.model.QuestionType
+import com.fcorallini.recall.core.domain.model.Question
+import com.fcorallini.recall.core.domain.model.QuestionStats
+import com.fcorallini.recall.core.domain.model.QuestionType
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody

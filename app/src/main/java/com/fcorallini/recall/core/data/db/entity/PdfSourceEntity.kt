@@ -1,8 +1,8 @@
-package com.fcorallini.recall.core.db.entity
+package com.fcorallini.recall.core.data.db.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.fcorallini.recall.core.model.PdfSource
+import com.fcorallini.recall.core.domain.model.PdfSource
 
 @Entity(tableName = "pdf_sources")
 data class PdfSourceEntity(

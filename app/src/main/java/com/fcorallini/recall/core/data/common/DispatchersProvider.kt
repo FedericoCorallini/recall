@@ -1,4 +1,4 @@
-package com.fcorallini.recall.core.common
+package com.fcorallini.recall.core.data.common
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers

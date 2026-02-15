@@ -3,8 +3,8 @@ package com.fcorallini.recall.home.data.extractor
 import android.content.Context
 import android.provider.OpenableColumns
 import androidx.core.net.toUri
-import com.fcorallini.recall.core.common.DispatchersProvider
-import com.fcorallini.recall.core.common.readBytesFromUri
+import com.fcorallini.recall.core.data.common.DispatchersProvider
+import com.fcorallini.recall.core.data.common.readBytesFromUri
 import com.fcorallini.recall.home.domain.extractor.PdfContentExtractor
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.withContext

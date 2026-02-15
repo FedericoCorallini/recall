@@ -1,4 +1,4 @@
-package com.fcorallini.recall.core.model
+package com.fcorallini.recall.core.domain.model
 
 enum class QuestionType {
     MULTIPLE_CHOICE,

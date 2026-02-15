@@ -1,4 +1,4 @@
-package com.fcorallini.recall.core.model
+package com.fcorallini.recall.core.domain.model
 
 data class QuestionStats(
     val totalTimesAsked: Int = 0,

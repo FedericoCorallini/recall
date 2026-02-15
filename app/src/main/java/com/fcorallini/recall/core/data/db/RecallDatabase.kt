@@ -1,13 +1,13 @@
-package com.fcorallini.recall.core.db
+package com.fcorallini.recall.core.data.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.fcorallini.recall.core.db.converter.Converters
-import com.fcorallini.recall.core.db.dao.PdfSourceDao
-import com.fcorallini.recall.core.db.dao.QuestionDao
-import com.fcorallini.recall.core.db.entity.PdfSourceEntity
-import com.fcorallini.recall.core.db.entity.QuestionEntity
+import com.fcorallini.recall.core.data.db.converter.Converters
+import com.fcorallini.recall.core.data.db.dao.PdfSourceDao
+import com.fcorallini.recall.core.data.db.dao.QuestionDao
+import com.fcorallini.recall.core.data.db.entity.PdfSourceEntity
+import com.fcorallini.recall.core.data.db.entity.QuestionEntity
 
 @Database(
     entities = [PdfSourceEntity::class, QuestionEntity::class],

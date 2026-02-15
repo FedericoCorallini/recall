@@ -1,7 +1,7 @@
-package com.fcorallini.recall.core.db.converter
+package com.fcorallini.recall.core.data.db.converter
 
 import androidx.room.TypeConverter
-import com.fcorallini.recall.core.model.QuestionType
+import com.fcorallini.recall.core.domain.model.QuestionType
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 

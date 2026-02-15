@@ -1,7 +1,7 @@
 package com.fcorallini.recall.quiz.domain.usecase
 
-import com.fcorallini.recall.core.model.Question
-import com.fcorallini.recall.home.domain.repository.QuestionRepository
+import com.fcorallini.recall.core.domain.model.Question
+import com.fcorallini.recall.core.domain.repository.QuestionRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

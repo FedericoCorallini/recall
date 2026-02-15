@@ -17,7 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.fcorallini.recall.core.model.PdfSource
+import com.fcorallini.recall.core.domain.model.PdfSource
 import com.fcorallini.recall.ui.theme.RecallTheme
 
 @Composable

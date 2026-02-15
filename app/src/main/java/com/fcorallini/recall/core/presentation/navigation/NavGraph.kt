@@ -1,4 +1,4 @@
-package com.fcorallini.recall.core.navigation
+package com.fcorallini.recall.core.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController

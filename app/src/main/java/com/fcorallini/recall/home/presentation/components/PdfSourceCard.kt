@@ -20,7 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.fcorallini.recall.core.model.PdfSource
+import com.fcorallini.recall.core.domain.model.PdfSource
 
 @Composable
 fun PdfSourceCard(

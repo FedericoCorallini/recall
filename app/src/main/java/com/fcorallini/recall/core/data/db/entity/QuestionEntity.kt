@@ -1,10 +1,10 @@
-package com.fcorallini.recall.core.db.entity
+package com.fcorallini.recall.core.data.db.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.fcorallini.recall.core.model.Question
-import com.fcorallini.recall.core.model.QuestionStats
-import com.fcorallini.recall.core.model.QuestionType
+import com.fcorallini.recall.core.domain.model.Question
+import com.fcorallini.recall.core.domain.model.QuestionStats
+import com.fcorallini.recall.core.domain.model.QuestionType
 
 @Entity(tableName = "questions")
 data class QuestionEntity(

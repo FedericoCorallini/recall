@@ -31,9 +31,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.fcorallini.recall.core.model.Question
-import com.fcorallini.recall.core.model.QuestionStats
-import com.fcorallini.recall.core.model.QuestionType
+import com.fcorallini.recall.core.domain.model.Question
+import com.fcorallini.recall.core.domain.model.QuestionStats
+import com.fcorallini.recall.core.domain.model.QuestionType
 import com.fcorallini.recall.ui.theme.RecallTheme
 
 @Composable

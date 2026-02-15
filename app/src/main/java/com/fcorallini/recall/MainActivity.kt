@@ -9,7 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
-import com.fcorallini.recall.core.navigation.RecallNavGraph
+import com.fcorallini.recall.core.presentation.navigation.RecallNavGraph
 import com.fcorallini.recall.ui.theme.RecallTheme
 import dagger.hilt.android.AndroidEntryPoint
 

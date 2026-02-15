@@ -1,13 +1,13 @@
-package com.fcorallini.recall.home.data.repository
+package com.fcorallini.recall.core.data.repository
 
-import com.fcorallini.recall.core.common.DispatchersProvider
-import com.fcorallini.recall.core.common.Result
-import com.fcorallini.recall.core.common.TimeProvider
-import com.fcorallini.recall.core.db.dao.PdfSourceDao
-import com.fcorallini.recall.core.db.entity.toDomain
-import com.fcorallini.recall.core.db.entity.toEntity
-import com.fcorallini.recall.core.model.PdfSource
-import com.fcorallini.recall.home.domain.repository.PdfSourceRepository
+import com.fcorallini.recall.core.data.common.DispatchersProvider
+import com.fcorallini.recall.core.data.common.Result
+import com.fcorallini.recall.core.data.common.TimeProvider
+import com.fcorallini.recall.core.data.db.dao.PdfSourceDao
+import com.fcorallini.recall.core.data.db.entity.toDomain
+import com.fcorallini.recall.core.data.db.entity.toEntity
+import com.fcorallini.recall.core.domain.model.PdfSource
+import com.fcorallini.recall.core.domain.repository.PdfSourceRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
