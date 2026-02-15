@@ -1,14 +1,28 @@
-# 📚 Recall - Quiz Generator App (MVP)
+# 📚 Recall - Quiz Generator App
 
 An Android app that creates and runs quizzes/flashcards from PDFs using Kotlin and Jetpack Compose.
 
 ## Overview
 
-Recall is an educational app that transforms PDF documents into interactive quizzes and flashcards. This MVP version includes a mocked question generation system, designed to be easily extended with real AI-powered PDF parsing in future iterations.
+Recall is an educational app that transforms PDF documents into interactive quizzes and flashcards. This version uses the OpenAI API to generate real questions from PDFs while preserving the existing Room-based tracking of quiz stats.
 
-## Features (Iteration 1)
+## Features
+
+### Iteration 2 (Current) ✨
 
 ### Home Screen
+- **PDF Source Library**: View all previously uploaded PDFs in a scrollable list
+- **Practice Statistics**: Each PDF shows:
+  - Number of times practiced
+  - Average score percentage
+  - Last practice time (relative: "2 hours ago", "3 days ago")
+- **Empty State**: Clean onboarding screen when no PDFs have been uploaded
+- **Quick Actions**: 
+  - Tap any PDF card to repeat the quiz
+  - Floating Action Button (FAB) to upload new PDFs
+- Real-time updates when quiz statistics change
+
+### Iteration 1
 - Clean, modern UI with Material 3 design
 - PDF file picker integration (restricted to application/pdf)
 - Automatic quiz generation from selected PDFs
@@ -80,7 +94,10 @@ data class PdfSource(
     val id: String,
     val displayName: String,
     val uriString: String,
-    val createdAtEpochMs: Long
+    val createdAtEpochMs: Long,
+    val practiceCount: Int = 0,           // Number of times quiz was completed
+    val lastPracticedEpochMs: Long? = null, // Timestamp of last practice
+    val averageScore: Float = 0f          // Running average (0.0 to 1.0)
 )
 
 data class Question(
@@ -102,46 +119,67 @@ data class QuestionStats(
 )
 ```
 
-## Mock Question Generation
+## OpenAI PDF Question Generation (How It Works)
 
-Currently, the app generates **6 hardcoded questions** about software engineering topics:
-- 4 multiple-choice questions (Kotlin, HTTP, Clean Architecture)
-- 2 flashcard questions (SOLID principles, ViewModels)
+This app generates questions from PDFs using the OpenAI **Files** and **Responses** APIs with strict JSON schema output.
 
-**Location**: `home/data/generator/MockQuestionGenerator.kt`
+### 1) Pick a PDF (Storage Access Framework)
+- The user selects a PDF via SAF, and the app receives a `content://...` URI.
+- `GenerationRepositoryImpl` reads the PDF bytes via `Context.readBytesFromUri(uriString)`.
 
-## How to Extend for Real AI Integration
+### 2) Upload the PDF to OpenAI Files API
+- The data source `OpenAiQuestionGenerationRemoteDataSource` uploads the bytes to:
+  - `POST https://api.openai.com/v1/files`
+  - `purpose = "assistants"`
+- The response returns a `fileId` (e.g., `file_...`).
 
-### Step 1: Implement PDF Parsing
-Replace mock generation in `GenerationRepositoryImpl`:
-```kotlin
-// Current: MockQuestionGenerator.generateQuestions(sourceId)
-// Future: Parse PDF content from URI
-val pdfContent = pdfParser.extractText(uriString)
+### 3) Generate questions via OpenAI Responses API
+- The app calls:
+  - `POST https://api.openai.com/v1/responses`
+- The request includes:
+  - `model` (e.g., `gpt-4o-mini`)
+  - `input` with:
+    - A **system** message describing the JSON-only requirements
+    - A **user** message referencing the uploaded `fileId`
+  - `text.format` configured as `json_schema`
+- The response returns a JSON string matching the schema.
+
+### 4) Validate + Map to domain
+- The JSON is parsed into `GeneratedQuestionsResponse`.
+- Validation rules:
+  - Exactly **6 questions**
+  - **4 MULTIPLE_CHOICE + 2 FLASHCARD**
+  - MULTIPLE_CHOICE must have 4 options and a valid answer
+  - FLASHCARD must have empty `options`
+- Each question is converted into the domain model with:
+  - `id = UUID.randomUUID().toString()`
+  - `sourceId = PdfSource.id`
+  - `stats = QuestionStats()` defaults
+
+### 5) Persist to Room
+- `PdfSource` is saved in `pdf_sources`
+- Questions are saved in `questions`
+- The repository returns `Result.Success(sourceId)` so the app can navigate to the quiz.
+
+## OpenAI Configuration
+
+### Local API Key
+- Add your OpenAI API key in `local.properties`:
 ```
-
-### Step 2: Integrate AI API
-Add AI question generation service:
-```kotlin
-interface AiService {
-    suspend fun generateQuestions(content: String): List<Question>
-}
-
-// Use Retrofit with OpenAI/Gemini/etc.
+OPENAI_API_KEY=your_api_key_here
 ```
+- The key is injected into `BuildConfig.OPENAI_API_KEY`.
+- `ApiKeyProvider` exposes it to the networking layer.
+- **Never commit** `local.properties`.
 
-### Step 3: Update Use Case
-Modify `GenerateFromPdfUseCase` to call real API:
-```kotlin
-val content = pdfParser.extractText(uriString)
-val questions = aiService.generateQuestions(content)
-```
+### Networking
+- **Retrofit + OkHttp** are used for API calls.
+- The `Authorization` header is automatically added:
+  - `Authorization: Bearer <OPENAI_API_KEY>`
 
-### Files to Modify
-- `home/data/repository/GenerationRepositoryImpl.kt` - Main generation logic
-- `home/data/generator/MockQuestionGenerator.kt` - Replace with real parser
-- Add PDF parsing library (e.g., `Apache PDFBox` or `iText`)
-- Add AI API client (Retrofit already included)
+## Error Handling
+- Any validation or API failures return `Result.Error(exception)` from the repository.
+- Errors are logged for debugging (no sensitive content should be logged).
 
 ## Building and Running
 
@@ -159,7 +197,7 @@ val questions = aiService.generateQuestions(content)
 ### Testing the Flow
 1. Launch app → See Home screen
 2. Tap "Upload PDF" → Select any PDF file
-3. Wait for generation (mocked, instant)
+3. Wait for generation (real API call)
 4. Answer quiz questions one by one
 5. View final score summary
 6. Return to Home screen
@@ -172,7 +210,10 @@ CREATE TABLE pdf_sources (
     id TEXT PRIMARY KEY,
     displayName TEXT NOT NULL,
     uriString TEXT NOT NULL,
-    createdAtEpochMs INTEGER NOT NULL
+    createdAtEpochMs INTEGER NOT NULL,
+    practiceCount INTEGER NOT NULL DEFAULT 0,
+    lastPracticedEpochMs INTEGER,
+    averageScore REAL NOT NULL DEFAULT 0.0
 )
 ```
 
@@ -193,16 +234,37 @@ CREATE TABLE questions (
 )
 ```
 
+## Recent Changes (Iteration 2)
+
+### What's New
+- ✅ **PDF Library View**: See all your quiz sources in one place
+- ✅ **Practice Tracking**: Automatic statistics for each PDF source
+- ✅ **Average Score Calculation**: Running average of all quiz attempts
+- ✅ **Relative Time Display**: Human-readable last practice time
+- ✅ **Quick Restart**: Tap any PDF card to practice again
+- ✅ **Database Schema V2**: Added practice statistics to PdfSource table
+
+### Technical Implementation
+- Added `ObservePdfSourcesUseCase` to watch PDF source changes
+- Implemented `UpdatePdfSourceStatsUseCase` to update statistics after quiz completion
+- Extended `QuizViewModel` to automatically update source stats on quiz end
+- Redesigned `HomeScreen` with LazyColumn for scrollable list
+- Added FAB for new uploads when sources exist
+- Database migration from v1 to v2 with `fallbackToDestructiveMigration`
+
 ## Future Enhancements
 
-### Iteration 2+
-- [ ] Real PDF text extraction
-- [ ] AI-powered question generation (OpenAI/Gemini)
+### Iteration 3+
+- [ ] Richer answer explanations
 - [ ] Question difficulty levels
-- [ ] Spaced repetition algorithm
-- [ ] History screen showing past quizzes
-- [ ] Export quiz results
-- [ ] Dark mode support
+- [ ] Question difficulty levels
+- [ ] Spaced repetition algorithm based on individual question performance
+- [ ] Detailed history screen showing past quiz sessions with timestamps
+- [ ] Export quiz results to CSV/PDF
+- [ ] Search and filter PDFs
+- [ ] Sort by: Most Recent, Highest Score, Most Practiced
+- [ ] Delete PDF sources
+- [ ] Edit question content
 - [ ] Multi-language support
 
 ## License

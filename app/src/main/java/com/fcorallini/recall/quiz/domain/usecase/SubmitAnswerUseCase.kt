@@ -1,13 +1,13 @@
 package com.fcorallini.recall.quiz.domain.usecase
 
-import com.fcorallini.recall.core.common.Result
-import com.fcorallini.recall.quiz.domain.repository.QuizRepository
+import com.fcorallini.recall.core.data.common.Result
+import com.fcorallini.recall.core.domain.repository.QuestionRepository
 import javax.inject.Inject
 
 class SubmitAnswerUseCase @Inject constructor(
-    private val repository: QuizRepository
+    private val questionRepository: QuestionRepository
 ) {
     suspend operator fun invoke(questionId: String, userAnswer: String): Result<Unit> {
-        return repository.submitAnswer(questionId, userAnswer)
+        return questionRepository.submitAnswer(questionId, userAnswer)
     }
 }
