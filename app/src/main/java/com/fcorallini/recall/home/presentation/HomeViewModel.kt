@@ -10,6 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,11 +20,8 @@ class HomeViewModel @Inject constructor(
     private val observePdfSourcesUseCase: ObservePdfSourcesUseCase
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Idle)
-    val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
-
-    private val _pdfSources = MutableStateFlow<List<PdfSource>>(emptyList())
-    val pdfSources: StateFlow<List<PdfSource>> = _pdfSources.asStateFlow()
+    private val _state = MutableStateFlow(HomeState())
+    val state: StateFlow<HomeState> = _state.asStateFlow()
 
     init {
         observePdfSources()
@@ -32,28 +30,39 @@ class HomeViewModel @Inject constructor(
     private fun observePdfSources() {
         viewModelScope.launch {
             observePdfSourcesUseCase().collect { sources ->
-                _pdfSources.value = sources
+                _state.update { it.copy(pdfSources = sources) }
             }
         }
     }
 
-    fun generateFromPdf(uriString: String) {
+    fun onEvent(event: HomeEvent) {
+        when (event) {
+            is HomeEvent.GenerateFromPdf -> generateFromPdf(event.uri)
+            is HomeEvent.ResetState -> _state.update {
+                it.copy(errorMessage = null, navigateToQuizId = null)
+            }
+        }
+    }
+
+    private fun generateFromPdf(uri: String) {
         viewModelScope.launch {
-            _uiState.value = HomeUiState.Loading
-            when (val result = generateFromPdfUseCase(uriString)) {
+            _state.update { it.copy(isLoading = true, errorMessage = null) }
+            when (val result = generateFromPdfUseCase(uri)) {
                 is Result.Success -> {
-                    _uiState.value = HomeUiState.Success(result.data)
+                    _state.update {
+                        it.copy(isLoading = false, navigateToQuizId = result.data)
+                    }
                 }
+
                 is Result.Error -> {
-                    _uiState.value = HomeUiState.Error(
-                        result.exception.message ?: "Unknown error occurred"
-                    )
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = result.exception.message ?: "Unknown error"
+                        )
+                    }
                 }
             }
         }
-    }
-
-    fun resetState() {
-        _uiState.value = HomeUiState.Idle
     }
 }
