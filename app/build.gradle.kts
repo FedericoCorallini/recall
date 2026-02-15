@@ -1,10 +1,19 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
 }
+
+val localProps = Properties().apply {
+    val f = rootProject.file("local.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
+}
+val openAiKey: String = localProps.getProperty("OPENAI_API_KEY") ?: ""
 
 android {
     namespace = "com.fcorallini.recall"
@@ -17,6 +26,9 @@ android {
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // BuildConfig.OPENAI_API_KEY (do NOT commit local.properties)
+        buildConfigField("String", "OPENAI_API_KEY", "\"$openAiKey\"")
     }
 
     buildTypes {
@@ -27,19 +39,21 @@ android {
                 "proguard-rules.pro"
             )
         }
+        debug {
+            // Optional: allow running without key (you can warn in-app)
+            // buildConfigField("String", "OPENAI_API_KEY", "\"$openAiKey\"")
+        }
     }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-
-    kotlinOptions {
-        jvmTarget = "11"
-    }
+    kotlinOptions { jvmTarget = "11" }
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -67,9 +81,17 @@ dependencies {
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
 
+    // OkHttp
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging)
+
     // Retrofit
     implementation(libs.retrofit)
-    implementation(libs.retrofit.gson)
+    // Choose ONE converter approach. If you use Kotlinx Serialization, remove gson.
+    implementation(libs.retrofit.kotlinx.serialization)
+
+    // Kotlinx Serialization JSON
+    implementation(libs.kotlinx.serialization.json)
 
     // Lifecycle / ViewModel
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
