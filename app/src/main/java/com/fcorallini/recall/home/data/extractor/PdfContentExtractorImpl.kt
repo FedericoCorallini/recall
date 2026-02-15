@@ -5,19 +5,21 @@ import android.provider.OpenableColumns
 import androidx.core.net.toUri
 import com.fcorallini.recall.core.common.DispatchersProvider
 import com.fcorallini.recall.core.common.readBytesFromUri
+import com.fcorallini.recall.home.domain.extractor.PdfContentExtractor
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class PdfContentExtractor @Inject constructor(
+class PdfContentExtractorImpl @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val dispatchers: DispatchersProvider
-) {
-    suspend fun extractBytes(uriString: String): ByteArray = withContext(dispatchers.io) {
+) : PdfContentExtractor {
+
+    override suspend fun extractBytes(uriString: String): ByteArray = withContext(dispatchers.io) {
         context.readBytesFromUri(uriString)
     }
 
-    suspend fun extractDisplayName(uriString: String): String = withContext(dispatchers.io) {
+    override suspend fun extractDisplayName(uriString: String): String = withContext(dispatchers.io) {
         return@withContext try {
             val uri = uriString.toUri()
             var displayName: String? = null

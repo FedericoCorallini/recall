@@ -3,7 +3,7 @@ package com.fcorallini.recall.home.domain.usecase
 import com.fcorallini.recall.core.common.Result
 import com.fcorallini.recall.core.common.TimeProvider
 import com.fcorallini.recall.core.model.PdfSource
-import com.fcorallini.recall.home.data.extractor.PdfContentExtractor
+import com.fcorallini.recall.home.domain.extractor.PdfContentExtractor
 import com.fcorallini.recall.home.domain.repository.PdfSourceRepository
 import com.fcorallini.recall.home.domain.repository.QuestionRepository
 import java.util.UUID
