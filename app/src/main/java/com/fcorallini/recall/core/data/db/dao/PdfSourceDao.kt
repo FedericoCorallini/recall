@@ -19,9 +19,14 @@ interface PdfSourceDao {
     @Query("SELECT * FROM pdf_sources WHERE id = :id")
     suspend fun getById(id: String): PdfSourceEntity?
 
-    @Query("SELECT * FROM pdf_sources ORDER BY lastPracticedEpochMs DESC, createdAtEpochMs DESC")
+    @Query("""
+        SELECT * FROM pdf_sources
+        ORDER BY
+            lastPracticedEpochMs IS NOT NULL, 
+            lastPracticedEpochMs ASC,
+            averageScore ASC, 
+            practiceCount ASC,
+            createdAtEpochMs DESC
+    """)
     fun observeAll(): Flow<List<PdfSourceEntity>>
-
-    @Query("SELECT * FROM pdf_sources ORDER BY lastPracticedEpochMs DESC, createdAtEpochMs DESC")
-    suspend fun getAll(): List<PdfSourceEntity>
 }

@@ -16,7 +16,15 @@ interface QuestionDao {
     @Update
     suspend fun update(question: QuestionEntity)
 
-    @Query("SELECT * FROM questions WHERE sourceId = :sourceId")
+    @Query("""
+        SELECT * FROM questions
+        WHERE sourceId = :sourceId
+        ORDER BY
+            lastTimeAskedEpochMs IS NOT NULL,
+            lastTimeAskedEpochMs ASC,
+            rating DESC
+        LIMIT 10
+    """)
     fun getBySourceId(sourceId: String): Flow<List<QuestionEntity>>
 
     @Query("SELECT * FROM questions WHERE id = :id")

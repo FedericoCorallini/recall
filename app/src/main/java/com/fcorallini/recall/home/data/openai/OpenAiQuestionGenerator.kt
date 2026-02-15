@@ -22,7 +22,10 @@ class OpenAiQuestionGenerator @Inject constructor(
         private const val MODEL = "gpt-4o-mini"
         private const val FILE_PURPOSE = "assistants"
 
-        private const val SYSTEM_PROMPT = """
+        /**
+         * System prompt template with {questionCount} placeholder.
+         */
+        private const val SYSTEM_PROMPT_TEMPLATE = """
             You generate multiple-choice quiz questions grounded strictly in the provided PDF.
             
             Hard rules:
@@ -32,28 +35,31 @@ class OpenAiQuestionGenerator @Inject constructor(
             - Output must follow the provided JSON schema exactly (no markdown, no extra fields).
             
             Requirements:
-            - Generate exactly 6 MULTIPLE_CHOICE questions.
+            - Generate exactly {questionCount} MULTIPLE_CHOICE questions.
             - Each question must have exactly 4 options.
             - Exactly 1 option is correct.
             - The "answer" must match one of the options exactly.
             - Keep prompts and options short and unambiguous.
+            - Cover different sections of the document; avoid repeating the same concept.
+            - Prefer questions that test key definitions, steps, comparisons, and examples present in the content.
             """
     }
 
     suspend fun generateQuestionsFromPdf(
         pdfBytes: ByteArray,
         filename: String,
-        sourceId: String
+        sourceId: String,
+        questionCount: Int
     ): List<Question> {
         try {
-            Log.d(TAG, "Starting PDF question generation for: $filename")
+            Log.d(TAG, "Starting PDF question generation for: $filename ($questionCount questions)")
 
             // Step 1: Upload PDF to OpenAI Files API
             val fileId = uploadPdfFile(pdfBytes, filename)
             Log.d(TAG, "Uploaded PDF with fileId: $fileId")
 
             // Step 2: Generate questions using Chat Completions API with the file
-            val generatedQuestions = generateQuestionsWithFile(fileId)
+            val generatedQuestions = generateQuestionsWithFile(fileId, questionCount)
             Log.d(TAG, "Generated ${generatedQuestions.questions.size} questions")
 
             // Step 3: Convert to domain models and validate
@@ -87,15 +93,16 @@ class OpenAiQuestionGenerator @Inject constructor(
         }
     }
 
-    private suspend fun generateQuestionsWithFile(fileId: String): GeneratedQuestionsResponse {
-        val schema = buildQuestionSchema()
+    private suspend fun generateQuestionsWithFile(fileId: String, questionCount: Int): GeneratedQuestionsResponse {
+        val schema = buildQuestionSchema(questionCount)
+        val systemPrompt = SYSTEM_PROMPT_TEMPLATE.replace("{questionCount}", questionCount.toString())
 
         val request = ResponsesRequest(
             model = MODEL,
             input = listOf(
                 InputItem(
                     role = "system",
-                    content = listOf(ContentPart.InputText(SYSTEM_PROMPT))
+                    content = listOf(ContentPart.InputText(systemPrompt))
                 ),
                 InputItem(
                     role = "user",
@@ -124,7 +131,7 @@ class OpenAiQuestionGenerator @Inject constructor(
         return json.decodeFromString(GeneratedQuestionsResponse.serializer(), jsonText)
     }
 
-    private fun buildQuestionSchema(): Schema {
+    private fun buildQuestionSchema(questionCount: Int): Schema {
         val questionObject = PropertyDefinition(
             type = "object",
             properties = mapOf(
@@ -147,8 +154,8 @@ class OpenAiQuestionGenerator @Inject constructor(
                 "questions" to PropertyDefinition(
                     type = "array",
                     items = questionObject,
-                    minItems = 6,
-                    maxItems = 6
+                    minItems = questionCount,
+                    maxItems = questionCount
                 )
             ),
             required = listOf("questions"),
