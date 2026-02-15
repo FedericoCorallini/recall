@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fcorallini.recall.core.common.Result
 import com.fcorallini.recall.core.model.PdfSource
-import com.fcorallini.recall.home.domain.usecase.GenerateFromPdfUseCase
+import com.fcorallini.recall.home.domain.usecase.GenerateQuizFromPdfUseCase
 import com.fcorallini.recall.home.domain.usecase.ObservePdfSourcesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val generateFromPdfUseCase: GenerateFromPdfUseCase,
+    private val generateQuizFromPdfUseCase: GenerateQuizFromPdfUseCase,
     private val observePdfSourcesUseCase: ObservePdfSourcesUseCase
 ) : ViewModel() {
 
@@ -47,7 +47,7 @@ class HomeViewModel @Inject constructor(
     private fun generateFromPdf(uri: String) {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, errorMessage = null) }
-            when (val result = generateFromPdfUseCase(uri)) {
+            when (val result = generateQuizFromPdfUseCase(uri)) {
                 is Result.Success -> {
                     _state.update {
                         it.copy(isLoading = false, navigateToQuizId = result.data)

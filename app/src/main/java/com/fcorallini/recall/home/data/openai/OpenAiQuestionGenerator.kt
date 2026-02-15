@@ -1,10 +1,9 @@
-package com.fcorallini.recall.home.data.datasource
+package com.fcorallini.recall.home.data.openai
 
 import android.util.Log
 import com.fcorallini.recall.core.model.Question
 import com.fcorallini.recall.core.model.QuestionStats
 import com.fcorallini.recall.core.model.QuestionType
-import com.fcorallini.recall.home.data.network.*
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
@@ -14,14 +13,10 @@ import java.io.File
 import java.util.UUID
 import javax.inject.Inject
 
-/**
- * Implementation of QuestionGenerationRemoteDataSource using OpenAI API
- */
-class OpenAiQuestionGenerationRemoteDataSource @Inject constructor(
+class OpenAiQuestionGenerator @Inject constructor(
     private val openAiService: OpenAiService,
     private val json: Json
-) : QuestionGenerationRemoteDataSource {
-
+) {
     companion object {
         private const val TAG = "OpenAiQuestionGen"
         private const val MODEL = "gpt-4o-mini"
@@ -45,30 +40,30 @@ class OpenAiQuestionGenerationRemoteDataSource @Inject constructor(
             """
     }
 
-    override suspend fun generateQuestionsFromPdf(
+    suspend fun generateQuestionsFromPdf(
         pdfBytes: ByteArray,
         filename: String,
         sourceId: String
     ): List<Question> {
         try {
             Log.d(TAG, "Starting PDF question generation for: $filename")
-            
+
             // Step 1: Upload PDF to OpenAI Files API
             val fileId = uploadPdfFile(pdfBytes, filename)
             Log.d(TAG, "Uploaded PDF with fileId: $fileId")
-            
+
             // Step 2: Generate questions using Chat Completions API with the file
             val generatedQuestions = generateQuestionsWithFile(fileId)
             Log.d(TAG, "Generated ${generatedQuestions.questions.size} questions")
-            
+
             // Step 3: Convert to domain models and validate
             val domainQuestions = generatedQuestions.questions.mapIndexed { index, genQ ->
                 validateAndConvertToDomain(genQ, sourceId, index)
             }
-            
+
             Log.d(TAG, "Successfully converted all questions to domain models")
             return domainQuestions
-            
+
         } catch (e: Exception) {
             Log.e(TAG, "Failed to generate questions from PDF", e)
             throw Exception("Failed to generate questions: ${e.message}", e)
@@ -80,16 +75,53 @@ class OpenAiQuestionGenerationRemoteDataSource @Inject constructor(
         val tempFile = File.createTempFile("upload_", ".pdf")
         try {
             tempFile.writeBytes(pdfBytes)
-            
+
             val requestBody = tempFile.asRequestBody("application/pdf".toMediaType())
             val filePart = MultipartBody.Part.createFormData("file", filename, requestBody)
             val purposeBody = FILE_PURPOSE.toRequestBody("text/plain".toMediaType())
-            
+
             val response = openAiService.uploadFile(filePart, purposeBody)
             return response.id
         } finally {
             tempFile.delete()
         }
+    }
+
+    private suspend fun generateQuestionsWithFile(fileId: String): GeneratedQuestionsResponse {
+        val schema = buildQuestionSchema()
+
+        val request = ResponsesRequest(
+            model = MODEL,
+            input = listOf(
+                InputItem(
+                    role = "system",
+                    content = listOf(ContentPart.InputText(SYSTEM_PROMPT))
+                ),
+                InputItem(
+                    role = "user",
+                    content = listOf(
+                        ContentPart.InputFile(fileId),
+                        ContentPart.InputText("Generate the questions now in Spanish.")
+                    )
+                )
+            ),
+            text = TextConfig(
+                format = TextFormat(
+                    type = "json_schema",
+                    name = "quiz_questions",
+                    strict = true,
+                    schema = schema
+                )
+            )
+        )
+
+        val response = openAiService.createResponse(request)
+
+        val jsonText = requireNotNull(response.firstOutputTextOrNull()) {
+            "No output_text found in response.output[]. Log the response to inspect structure."
+        }
+
+        return json.decodeFromString(GeneratedQuestionsResponse.serializer(), jsonText)
     }
 
     private fun buildQuestionSchema(): Schema {
@@ -152,45 +184,4 @@ class OpenAiQuestionGenerationRemoteDataSource @Inject constructor(
         )
     }
 
-
-    private suspend fun generateQuestionsWithFile(fileId: String): GeneratedQuestionsResponse {
-        val schema = buildQuestionSchema()
-
-        val request = ResponsesRequest(
-            model = MODEL,
-            input = listOf(
-                InputItem(
-                    role = "system",
-                    content = listOf(ContentPart.InputText(SYSTEM_PROMPT))
-                ),
-                InputItem(
-                    role = "user",
-                    content = listOf(
-                        ContentPart.InputFile(fileId),
-                        ContentPart.InputText("Generate the questions now in Spanish.")
-                    )
-                )
-            ),
-            text = TextConfig(
-                format = TextFormat(
-                    type = "json_schema",
-                    name = "quiz_questions",
-                    strict = true,
-                    schema = schema
-                )
-            )
-        )
-
-        val response = openAiService.createResponse(request)
-
-        val jsonText = requireNotNull(response.firstOutputTextOrNull()) {
-            "No output_text found in response.output[]. Log the response to inspect structure."
-        }
-
-        return json.decodeFromString(GeneratedQuestionsResponse.serializer(), jsonText)
-    }
-
-
-
 }
-

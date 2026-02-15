@@ -1,4 +1,4 @@
-package com.fcorallini.recall.home.data.network
+package com.fcorallini.recall.home.data.openai
 
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
