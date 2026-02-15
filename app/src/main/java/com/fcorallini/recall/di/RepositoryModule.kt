@@ -1,9 +1,11 @@
 package com.fcorallini.recall.di
 
-import com.fcorallini.recall.home.data.repository.GenerationRepositoryImpl
-import com.fcorallini.recall.home.domain.repository.GenerationRepository
-import com.fcorallini.recall.quiz.data.repository.QuizRepositoryImpl
-import com.fcorallini.recall.quiz.domain.repository.QuizRepository
+import com.fcorallini.recall.home.data.extractor.PdfContentExtractorImpl
+import com.fcorallini.recall.home.data.repository.PdfSourceRepositoryImpl
+import com.fcorallini.recall.home.data.repository.QuestionRepositoryImpl
+import com.fcorallini.recall.home.domain.extractor.PdfContentExtractor
+import com.fcorallini.recall.home.domain.repository.PdfSourceRepository
+import com.fcorallini.recall.home.domain.repository.QuestionRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -16,13 +18,19 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun bindGenerationRepository(
-        impl: GenerationRepositoryImpl
-    ): GenerationRepository
+    abstract fun bindPdfSourceRepository(
+        impl: PdfSourceRepositoryImpl
+    ): PdfSourceRepository
 
     @Binds
     @Singleton
-    abstract fun bindQuizRepository(
-        impl: QuizRepositoryImpl
-    ): QuizRepository
+    abstract fun bindQuestionRepository(
+        impl: QuestionRepositoryImpl
+    ): QuestionRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindExtractor(
+        impl: PdfContentExtractorImpl
+    ): PdfContentExtractor
 }

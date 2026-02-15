@@ -90,10 +90,10 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideQuestionGenerationRemoteDataSource(
+    fun provideQuestionGenerator(
         openAiService: OpenAiService,
         json: Json
-    ): QuestionGenerationRemoteDataSource {
+    ): OpenAiQuestionGenerator {
         return OpenAiQuestionGenerator(openAiService, json)
     }
 }

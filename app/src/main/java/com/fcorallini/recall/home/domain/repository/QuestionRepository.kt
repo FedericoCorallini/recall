@@ -1,5 +1,6 @@
 package com.fcorallini.recall.home.domain.repository
 
+import com.fcorallini.recall.core.common.Result
 import com.fcorallini.recall.core.model.Question
 import kotlinx.coroutines.flow.Flow
 
@@ -12,4 +13,6 @@ interface QuestionRepository {
         filename: String,
         sourceId: String
     ): List<Question>
+
+    suspend fun submitAnswer(questionId: String, userAnswer: String): Result<Unit>
 }
