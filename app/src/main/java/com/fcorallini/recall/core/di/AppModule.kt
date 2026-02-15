@@ -1,4 +1,4 @@
-package com.fcorallini.recall.di
+package com.fcorallini.recall.core.di
 
 import com.fcorallini.recall.core.data.common.DefaultDispatchersProvider
 import com.fcorallini.recall.core.data.common.DefaultTimeProvider

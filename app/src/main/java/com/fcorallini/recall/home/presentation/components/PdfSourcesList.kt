@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.fcorallini.recall.core.domain.model.PdfSource
-import com.fcorallini.recall.ui.theme.RecallTheme
+import com.fcorallini.recall.core.presentation.theme.RecallTheme
 
 @Composable
 fun PdfSourcesList(

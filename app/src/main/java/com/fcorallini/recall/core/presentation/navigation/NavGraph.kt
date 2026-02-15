@@ -30,10 +30,8 @@ fun RecallNavGraph(
             arguments = listOf(
                 navArgument("sourceId") { type = NavType.StringType }
             )
-        ) { backStackEntry ->
-            val sourceId = backStackEntry.arguments?.getString("sourceId") ?: return@composable
+        ) {
             QuizScreen(
-                sourceId = sourceId,
                 onNavigateBack = {
                     navController.popBackStack()
                 }

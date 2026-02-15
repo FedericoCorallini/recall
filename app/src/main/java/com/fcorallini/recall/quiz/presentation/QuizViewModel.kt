@@ -7,6 +7,7 @@ import com.fcorallini.recall.core.data.common.Result
 import com.fcorallini.recall.core.domain.model.Question
 import com.fcorallini.recall.quiz.domain.usecase.ObserveQuestionsBySourceUseCase
 import com.fcorallini.recall.quiz.domain.usecase.SubmitAnswerUseCase
+import com.fcorallini.recall.quiz.domain.usecase.UpdatePdfSourceStatsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -35,7 +36,7 @@ class QuizViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val observeQuestionsUseCase: ObserveQuestionsBySourceUseCase,
     private val submitAnswerUseCase: SubmitAnswerUseCase,
-    private val updatePdfSourceStatsUseCase: com.fcorallini.recall.quiz.domain.usecase.UpdatePdfSourceStatsUseCase
+    private val updatePdfSourceStatsUseCase: UpdatePdfSourceStatsUseCase
 ) : ViewModel() {
 
     private val sourceId: String = savedStateHandle["sourceId"] ?: ""

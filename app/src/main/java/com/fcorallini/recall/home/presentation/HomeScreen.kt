@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.fcorallini.recall.home.presentation.components.EmptyHomeContent
 import com.fcorallini.recall.home.presentation.components.PdfSourcesList
-import com.fcorallini.recall.ui.theme.RecallTheme
+import com.fcorallini.recall.core.presentation.theme.RecallTheme
 
 @Composable
 fun HomeScreen(

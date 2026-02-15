@@ -1,4 +1,4 @@
-package com.fcorallini.recall.ui.theme
+package com.fcorallini.recall.core.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 

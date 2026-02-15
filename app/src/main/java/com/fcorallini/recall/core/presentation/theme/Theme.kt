@@ -1,6 +1,5 @@
-package com.fcorallini.recall.ui.theme
+package com.fcorallini.recall.core.presentation.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
