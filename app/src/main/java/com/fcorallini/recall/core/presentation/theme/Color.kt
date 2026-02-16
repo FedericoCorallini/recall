@@ -2,7 +2,7 @@ package com.fcorallini.recall.core.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 
-val RecallBluePrimary = Color(0xFF5B8CFF)
+val RecallBluePrimary = Color(0xFF253770)
 val RecallBlueSecondary = Color(0xFF8FB3FF)
 val RecallIndigo = Color(0xFF3A4C9A)
 val RecallViolet = Color(0xFF5A4ABF)

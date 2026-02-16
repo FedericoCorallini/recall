@@ -2,6 +2,7 @@ package com.fcorallini.recall.home.presentation.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,6 +16,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -32,77 +35,80 @@ fun PdfSourceCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val cardShape = RoundedCornerShape(24.dp)
+
     Card(
         onClick = onClick,
         modifier = modifier.fillMaxWidth().height(300.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.onSurface,
-            disabledContainerColor = MaterialTheme.colorScheme.onSurface,
-            disabledContentColor = MaterialTheme.colorScheme.onSurface
-        ),
-        border = BorderStroke(
-            1.5.dp,
-            MaterialTheme.colorScheme.tertiary
+        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
+        shape = cardShape,
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF060606),
+            contentColor = MaterialTheme.colorScheme.onSurface
         )
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize().padding(16.dp),
-            verticalArrangement = Arrangement.SpaceBetween
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
         ) {
-            Text(
-                text = source.displayName.uppercase().dropLast(4),
-                style = MaterialTheme.typography.titleMedium,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceAround
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(20.dp),
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                // Left: score ring
-                ScoreRing(
-                    progress = source.averageScore.coerceIn(0f, 1f),
-                    label = if (source.practiceCount > 0) "Avg score" else "No data",
-                    modifier = Modifier.size(130.dp)
+                Text(
+                    text = source.displayName.uppercase().dropLast(4),
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
-                // Right: breakdown (2-3 rows)
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(14.dp)
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    StatRow(
-                        icon = Icons.Default.Info,
-                        label = "Last time practiced",
-                        value = source.lastPracticedEpochMs?.let { formatRelativeTime(it) } ?: "Never",
-                        highlight = false
+                    // Left: score ring
+                    ScoreRing(
+                        progress = source.averageScore.coerceIn(0f, 1f),
+                        label = if (source.practiceCount > 0) "Avg score" else "No data",
+                        modifier = Modifier.size(130.dp)
                     )
+                    // Right: breakdown (2-3 rows)
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(14.dp)
+                    ) {
+                        StatRow(
+                            icon = Icons.Default.Info,
+                            label = "Last time practiced",
+                            value = source.lastPracticedEpochMs?.let { formatRelativeTime(it) } ?: "Never",
+                            highlight = false
+                        )
 
-                    StatRow(
-                        icon = Icons.Default.DateRange,
-                        label = "Created",
-                        value = formatRelativeTime(source.createdAtEpochMs),
-                        highlight = false
-                    )
+                        StatRow(
+                            icon = Icons.Default.DateRange,
+                            label = "Created",
+                            value = formatRelativeTime(source.createdAtEpochMs),
+                            highlight = false
+                        )
 
-                    StatRow(
-                        icon = Icons.Default.CheckCircle,
-                        label = "Total Practices",
-                        value = source.practiceCount.toString(),
-                        highlight = false
-                    )
+                        StatRow(
+                            icon = Icons.Default.CheckCircle,
+                            label = "Total Practices",
+                            value = source.practiceCount.toString(),
+                            highlight = false
+                        )
+                    }
                 }
-            }
 
-            // Bottom button
-            Button(
-                onClick = onClick,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Practice Again")
+                // Bottom button
+                Button(
+                    onClick = onClick,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Practice Again")
+                }
             }
         }
     }
