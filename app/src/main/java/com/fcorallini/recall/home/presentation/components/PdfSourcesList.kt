@@ -1,6 +1,8 @@
 package com.fcorallini.recall.home.presentation.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +12,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,41 +30,41 @@ fun PdfSourcesList(
     onSourceClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp)
+    val pagerState = rememberPagerState(pageCount = { pdfSources.size })
+
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp)
     ) {
-        item {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "📚 My Quizzes",
-                    style = MaterialTheme.typography.headlineMedium
-                )
-                Text(
-                    text = "${pdfSources.size} ${if (pdfSources.size == 1) "quiz" else "quizzes"}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
+        // Header
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("📚 My Quizzes", style = MaterialTheme.typography.headlineMedium)
+            Text(
+                text = "${pdfSources.size} ${if (pdfSources.size == 1) "quiz" else "quizzes"}",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
 
-        items(pdfSources) { source ->
+        Spacer(Modifier.height(16.dp))
+
+        HorizontalPager(
+            state = pagerState,
+            contentPadding = PaddingValues(horizontal = 24.dp),
+            pageSpacing = 12.dp,
+            modifier = Modifier.fillMaxWidth().align(Alignment.Center)
+        ) { page ->
+            val source = pdfSources[page]
             PdfSourceCard(
                 source = source,
-                onClick = { onSourceClick(source.id) }
+                onClick = { onSourceClick(source.id) },
+                modifier = Modifier.fillMaxWidth()
             )
-            Spacer(modifier = Modifier.height(12.dp))
-        }
-
-        // Bottom padding for FAB
-        item {
-            Spacer(modifier = Modifier.height(80.dp))
         }
     }
 }

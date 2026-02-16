@@ -33,20 +33,20 @@ fun PdfSourceCard(
 ) {
     Card(
         onClick = onClick,
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().height(350.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        shape = RoundedCornerShape(16.dp)
+        shape = RoundedCornerShape(16.dp),
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-
+        Column(
+            modifier = Modifier.fillMaxSize().padding(16.dp),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
             Text(
                 text = source.displayName,
                 style = MaterialTheme.typography.titleMedium,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
-
-            Spacer(Modifier.height(12.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -57,11 +57,11 @@ fun PdfSourceCard(
                 ScoreRing(
                     progress = source.averageScore.coerceIn(0f, 1f),
                     label = if (source.practiceCount > 0) "Avg score" else "No data",
-                    modifier = Modifier.size(120.dp)
+                    modifier = Modifier.size(140.dp)
                 )
                 // Right: breakdown (2-3 rows)
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     StatRow(
                         icon = Icons.Default.Info,
@@ -85,8 +85,6 @@ fun PdfSourceCard(
                     )
                 }
             }
-
-            Spacer(Modifier.height(14.dp))
 
             // Bottom button
             Button(
