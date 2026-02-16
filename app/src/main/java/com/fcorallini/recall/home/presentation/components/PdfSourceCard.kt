@@ -1,5 +1,6 @@
 package com.fcorallini.recall.home.presentation.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
@@ -33,16 +34,26 @@ fun PdfSourceCard(
 ) {
     Card(
         onClick = onClick,
-        modifier = modifier.fillMaxWidth().height(350.dp),
+        modifier = modifier.fillMaxWidth().height(300.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = RoundedCornerShape(16.dp),
+        colors = CardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.onSurface,
+            disabledContainerColor = MaterialTheme.colorScheme.onSurface,
+            disabledContentColor = MaterialTheme.colorScheme.onSurface
+        ),
+        border = BorderStroke(
+            1.5.dp,
+            MaterialTheme.colorScheme.tertiary
+        )
     ) {
         Column(
             modifier = Modifier.fillMaxSize().padding(16.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = source.displayName,
+                text = source.displayName.uppercase().dropLast(4),
                 style = MaterialTheme.typography.titleMedium,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
@@ -57,11 +68,11 @@ fun PdfSourceCard(
                 ScoreRing(
                     progress = source.averageScore.coerceIn(0f, 1f),
                     label = if (source.practiceCount > 0) "Avg score" else "No data",
-                    modifier = Modifier.size(140.dp)
+                    modifier = Modifier.size(130.dp)
                 )
                 // Right: breakdown (2-3 rows)
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
                     StatRow(
                         icon = Icons.Default.Info,
@@ -133,7 +144,7 @@ private fun ScoreRing(
                 startAngle = -90f,
                 sweepAngle = 360f * progress.coerceIn(0f, 1f),
                 useCenter = false,
-                topLeft = androidx.compose.ui.geometry.Offset(inset, inset),
+                topLeft = Offset(inset, inset),
                 size = size,
                 style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
             )
