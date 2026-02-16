@@ -1,8 +1,9 @@
 package com.fcorallini.recall.home.presentation.components
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.R
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,8 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.MaterialTheme
@@ -24,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.fcorallini.recall.core.domain.model.PdfSource
 import com.fcorallini.recall.core.presentation.theme.RecallTheme
 
+
 @Composable
 fun PdfSourcesList(
     pdfSources: List<PdfSource>,
@@ -35,9 +35,7 @@ fun PdfSourcesList(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp)
     ) {
-        // Header
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -69,7 +67,7 @@ fun PdfSourcesList(
     }
 }
 
-@Preview()
+@Preview(showBackground = true)
 @Composable
 private fun PdfSourcesListPreview() {
     RecallTheme {
