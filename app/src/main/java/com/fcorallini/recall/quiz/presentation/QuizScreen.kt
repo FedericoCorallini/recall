@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.fcorallini.recall.core.presentation.theme.RecallTheme
+import com.fcorallini.recall.core.presentation.theme.RecallViolet
 import com.fcorallini.recall.quiz.presentation.components.QuizContent
 import com.fcorallini.recall.quiz.presentation.components.SummaryContent
 
@@ -37,6 +38,7 @@ fun QuizScreen(
                     Brush.verticalGradient(
                         colors = listOf(
                             MaterialTheme.colorScheme.background,
+                            RecallViolet.copy(alpha = 0.22f),
                             MaterialTheme.colorScheme.surface
                         )
                     )

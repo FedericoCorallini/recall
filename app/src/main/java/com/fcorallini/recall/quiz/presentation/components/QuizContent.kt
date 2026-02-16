@@ -131,7 +131,9 @@ fun QuizContent(
         // Submit button
         Button(
             onClick = onSubmit,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp),
             enabled = state.userAnswer.isNotBlank() && !state.isSubmitting,
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary,

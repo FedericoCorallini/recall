@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.fcorallini.recall.home.presentation.components.EmptyHomeContent
 import com.fcorallini.recall.home.presentation.components.PdfSourcesList
+import com.fcorallini.recall.core.presentation.theme.RecallViolet
 import com.fcorallini.recall.core.presentation.theme.RecallTheme
 
 @Composable
@@ -126,6 +127,7 @@ private fun HomeLoadingContent() {
                 Brush.verticalGradient(
                     colors = listOf(
                         MaterialTheme.colorScheme.surfaceVariant,
+                        RecallViolet.copy(alpha = 0.28f),
                         MaterialTheme.colorScheme.background
                     )
                 )

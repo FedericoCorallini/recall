@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.Color
 val RecallBluePrimary = Color(0xFF5B8CFF)
 val RecallBlueSecondary = Color(0xFF8FB3FF)
 val RecallIndigo = Color(0xFF3A4C9A)
+val RecallViolet = Color(0xFF5A4ABF)
 val RecallBackground = Color(0xFF0F172A)
 val RecallSurface = Color(0xFF111827)
 val RecallSurfaceVariant = Color(0xFF1F2937)
