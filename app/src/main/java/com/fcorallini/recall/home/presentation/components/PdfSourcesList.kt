@@ -65,7 +65,7 @@ fun PdfSourcesList(
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview()
 @Composable
 private fun PdfSourcesListPreview() {
     RecallTheme {

@@ -1,97 +1,189 @@
 package com.fcorallini.recall.home.presentation.components
 
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.fcorallini.recall.core.domain.model.PdfSource
+import com.fcorallini.recall.core.presentation.theme.RecallTheme
+import kotlin.math.roundToInt
 
 @Composable
 fun PdfSourceCard(
     source: PdfSource,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Card(
         onClick = onClick,
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        modifier = modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        shape = RoundedCornerShape(16.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+
             Text(
                 text = source.displayName,
                 style = MaterialTheme.typography.titleMedium,
-                maxLines = 2
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(Modifier.height(12.dp))
 
-            // Statistics Row
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceAround
             ) {
-                // Practice count
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Default.CheckCircle,
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp),
-                        tint = MaterialTheme.colorScheme.primary
+                // Left: score ring
+                ScoreRing(
+                    progress = source.averageScore.coerceIn(0f, 1f),
+                    label = if (source.practiceCount > 0) "Avg score" else "No data",
+                    modifier = Modifier.size(120.dp)
+                )
+                // Right: breakdown (2-3 rows)
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    StatRow(
+                        icon = Icons.Default.Info,
+                        label = "Last time practiced",
+                        value = source.lastPracticedEpochMs?.let { formatRelativeTime(it) } ?: "Never",
+                        highlight = false
                     )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = "${source.practiceCount} ${if (source.practiceCount == 1) "practice" else "practices"}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
 
-                // Average score
-                if (source.practiceCount > 0) {
-                    Text(
-                        text = "Avg: ${(source.averageScore * 100).toInt()}%",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary
+                    StatRow(
+                        icon = Icons.Default.DateRange,
+                        label = "Created",
+                        value = formatRelativeTime(source.createdAtEpochMs),
+                        highlight = false
+                    )
+
+                    StatRow(
+                        icon = Icons.Default.CheckCircle,
+                        label = "Total Practices",
+                        value = source.practiceCount.toString(),
+                        highlight = false
                     )
                 }
             }
 
-            // Last practiced
-            if (source.lastPracticedEpochMs != null) {
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "Last practiced: ${formatRelativeTime(source.lastPracticedEpochMs)}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+            Spacer(Modifier.height(14.dp))
+
+            // Bottom button
+            Button(
+                onClick = onClick,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Practice Again")
             }
         }
     }
 }
 
+@Composable
+private fun ScoreRing(
+    progress: Float,
+    label: String,
+    modifier: Modifier = Modifier
+) {
+    val percent = (progress * 100).roundToInt()
+    val trackColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.35f)
+    val progressColor = MaterialTheme.colorScheme.primary
+
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center
+    ) {
+        // Background ring
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val strokeWidth = 5.dp.toPx()
+            val inset = strokeWidth / 2f
+            val size = Size(size.width - strokeWidth, size.height - strokeWidth)
+
+            drawArc(
+                color = trackColor,
+                startAngle = -90f,
+                sweepAngle = 360f,
+                useCenter = false,
+                topLeft = Offset(inset, inset),
+                size = size,
+                style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+            )
+
+            // Progress ring
+            drawArc(
+                color = progressColor,
+                startAngle = -90f,
+                sweepAngle = 360f * progress.coerceIn(0f, 1f),
+                useCenter = false,
+                topLeft = androidx.compose.ui.geometry.Offset(inset, inset),
+                size = size,
+                style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+            )
+        }
+
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = if (label == "No data") "—" else "$percent%",
+                style = MaterialTheme.typography.titleLarge
+            )
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+private fun StatRow(
+    icon: ImageVector,
+    label: String,
+    value: String,
+    highlight: Boolean
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.End
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.End
+        )
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodyMedium,
+            color = if (highlight) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.End
+        )
+    }
+}
+
 private fun formatRelativeTime(epochMs: Long): String {
     val now = System.currentTimeMillis()
-    val diff = now - epochMs
+    val diff = (now - epochMs).coerceAtLeast(0)
     val minutes = diff / (60 * 1000)
     val hours = minutes / 60
     val days = hours / 24
@@ -102,5 +194,28 @@ private fun formatRelativeTime(epochMs: Long): String {
         hours < 24 -> "$hours ${if (hours == 1L) "hour" else "hours"} ago"
         days < 7 -> "$days ${if (days == 1L) "day" else "days"} ago"
         else -> "${days / 7} ${if (days / 7 == 1L) "week" else "weeks"} ago"
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PdfSourceCardPreview() {
+    RecallTheme {
+        Surface(color = MaterialTheme.colorScheme.background) {
+            val sampleSource = PdfSource(
+                id = "1",
+                displayName = "Exploring Data Visually.pdf",
+                uriString = "content://sample/1",
+                createdAtEpochMs = System.currentTimeMillis() - 4 * 24 * 60 * 60 * 1000,
+                practiceCount = 8,
+                lastPracticedEpochMs = System.currentTimeMillis() - 2 * 60 * 60 * 1000,
+                averageScore = 0.78f
+            )
+
+            PdfSourceCard(
+                source = sampleSource,
+                onClick = {},
+            )
+        }
     }
 }
