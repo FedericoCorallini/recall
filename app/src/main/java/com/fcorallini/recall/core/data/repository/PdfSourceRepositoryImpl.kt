@@ -59,4 +59,32 @@ class PdfSourceRepositoryImpl @Inject constructor(
                 Result.Error(e)
             }
         }
+
+    override suspend fun deleteById(id: String): Result<Unit> =
+        withContext(dispatchers.io) {
+            try {
+                val rows = pdfSourceDao.deleteById(id)
+                if (rows == 0) {
+                    Result.Error(Exception("PDF Source not found"))
+                } else {
+                    Result.Success(Unit)
+                }
+            } catch (e: Exception) {
+                Result.Error(e)
+            }
+        }
+
+    override suspend fun updateDisplayName(id: String, newDisplayName: String): Result<Unit> =
+        withContext(dispatchers.io) {
+            try {
+                val rows = pdfSourceDao.updateDisplayName(id, newDisplayName)
+                if (rows == 0) {
+                    Result.Error(Exception("PDF Source not found"))
+                } else {
+                    Result.Success(Unit)
+                }
+            } catch (e: Exception) {
+                Result.Error(e)
+            }
+        }
 }

@@ -3,12 +3,16 @@ package com.fcorallini.recall.home.presentation.components
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -33,6 +37,8 @@ import kotlin.math.roundToInt
 fun PdfSourceCard(
     source: PdfSource,
     onClick: () -> Unit,
+    onDeleteClick: () -> Unit = {},
+    onRenameClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val cardShape = RoundedCornerShape(24.dp)
@@ -57,12 +63,30 @@ fun PdfSourceCard(
                     .padding(20.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = source.displayName.uppercase().dropLast(4),
-                    style = MaterialTheme.typography.titleMedium,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
+                Row(
+                    modifier = Modifier,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = source.displayName.uppercase().dropLast(4),
+                        style = MaterialTheme.typography.titleMedium,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Rename source",
+                        tint = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.clickable(onClick = onRenameClick)
+                    )
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Delete source",
+                        tint = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.clickable(onClick = onDeleteClick)
+                    )
+                }
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -230,6 +254,8 @@ private fun PdfSourceCardPreview() {
             PdfSourceCard(
                 source = sampleSource,
                 onClick = {},
+                onDeleteClick = {},
+                onRenameClick = {}
             )
         }
     }

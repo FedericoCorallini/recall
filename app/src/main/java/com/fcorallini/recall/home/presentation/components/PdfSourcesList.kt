@@ -28,6 +28,8 @@ import com.fcorallini.recall.core.presentation.theme.RecallTheme
 fun PdfSourcesList(
     pdfSources: List<PdfSource>,
     onSourceClick: (String) -> Unit,
+    onSourceDelete: (PdfSource) -> Unit = {},
+    onSourceRename: (PdfSource) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val pagerState = rememberPagerState(pageCount = { pdfSources.size })
@@ -61,6 +63,8 @@ fun PdfSourcesList(
             PdfSourceCard(
                 source = source,
                 onClick = { onSourceClick(source.id) },
+                onDeleteClick = { onSourceDelete(source) },
+                onRenameClick = { onSourceRename(source) },
                 modifier = Modifier.fillMaxWidth()
             )
         }

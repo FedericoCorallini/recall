@@ -19,6 +19,12 @@ interface PdfSourceDao {
     @Query("SELECT * FROM pdf_sources WHERE id = :id")
     suspend fun getById(id: String): PdfSourceEntity?
 
+    @Query("DELETE FROM pdf_sources WHERE id = :id")
+    suspend fun deleteById(id: String): Int
+
+    @Query("UPDATE pdf_sources SET displayName = :displayName WHERE id = :id")
+    suspend fun updateDisplayName(id: String, displayName: String): Int
+
     @Query("""
         SELECT * FROM pdf_sources
         ORDER BY
