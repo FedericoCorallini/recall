@@ -76,7 +76,7 @@ fun PdfSourceCard(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
-                        text = source.displayName.uppercase().dropLast(4),
+                        text = source.displayName.uppercase(),
                         style = MaterialTheme.typography.titleMedium,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,

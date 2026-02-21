@@ -17,7 +17,7 @@ class GenerateQuizFromPdfUseCase @Inject constructor(
 ) {
     companion object {
         // OpenAI limit for PDF input is ~50MB, we use 45MB to be safe
-        private const val MAX_PDF_SIZE_BYTES = 45L * 1024 * 1024
+        private const val MAX_PDF_SIZE_BYTES = 40L * 1024 * 1024
         private const val MAX_QUESTIONS = 100
         private const val MIN_QUESTIONS = 10
         private const val PAGES_PER_QUESTION = 1f
