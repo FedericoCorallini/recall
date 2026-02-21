@@ -8,12 +8,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,11 +43,15 @@ fun GlobalStatsHeader(
     val hintColor = on.copy(alpha = 0.55f)
     val valueColor = on.copy(alpha = 0.95f)
 
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 4.dp, vertical = 18.dp)
-    ) {
+    val shape = RoundedCornerShape(12.dp)
+ 
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(24.dp)
+        ) {
+            Column {
 
         // Header (círculo + título)
         Row(
@@ -73,6 +77,14 @@ fun GlobalStatsHeader(
                     color = hintColor
                 )
             }
+            MiniStatText(
+                value = quizzesCount.toString(),
+                label = "Quizzes",
+                valueColor = valueColor,
+                labelColor = hintColor,
+                align = Alignment.End,
+                modifier = Modifier.weight(1f)
+            )
         }
 
         Spacer(Modifier.size(18.dp))
@@ -90,7 +102,7 @@ fun GlobalStatsHeader(
                     color = hintColor
                 )
 
-                Spacer(Modifier.size(8.dp))
+                Spacer(Modifier.size(4.dp))
 
                 Row(verticalAlignment = Alignment.Bottom) {
                     Text(
@@ -116,10 +128,33 @@ fun GlobalStatsHeader(
             // Derecha
             Column(
                 modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Last Time",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = hintColor
+                )
+
+                Spacer(Modifier.size(8.dp))
+
+                Text(
+                    text = stats.lastPracticedEpochMs?.let { formatShortRelativeTime(it) } ?: "Never",
+                    style = MaterialTheme.typography.displayMedium,
+                    color = valueColor,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+
+            Spacer(Modifier.size(16.dp))
+
+            // Derecha
+            Column(
+                modifier = Modifier.weight(1f),
                 horizontalAlignment = Alignment.End
             ) {
                 Text(
-                    text = "Eficacia promedio",
+                    text = "Eficacia",
                     style = MaterialTheme.typography.labelLarge,
                     color = hintColor
                 )
@@ -135,40 +170,6 @@ fun GlobalStatsHeader(
             }
         }
 
-        Spacer(Modifier.size(22.dp))
-
-        // Segunda fila: 3 stats (texto simple, alineado y con buen ritmo)
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Bottom
-        ) {
-            MiniStatText(
-                value = stats.totalPractices.toString(),
-                label = "Prácticas",
-                valueColor = valueColor,
-                labelColor = hintColor,
-                align = Alignment.Start,
-                modifier = Modifier.weight(1f)
-            )
-            MiniStatText(
-                value = quizzesCount.toString(),
-                label = "Quizzes",
-                valueColor = valueColor,
-                labelColor = hintColor,
-                align = Alignment.CenterHorizontally,
-                modifier = Modifier.weight(1f)
-            )
-            MiniStatText(
-                value = stats.lastPracticedEpochMs?.let { formatShortRelativeTime(it) } ?: "Nunca",
-                label = "Última vez",
-                valueColor = valueColor,
-                labelColor = hintColor,
-                align = Alignment.End,
-                modifier = Modifier.weight(1f)
-            )
-        }
-
         Spacer(Modifier.size(14.dp))
 
         Text(
@@ -176,7 +177,8 @@ fun GlobalStatsHeader(
             style = MaterialTheme.typography.labelMedium,
             color = hintColor
         )
-    }
+            }
+        }
 }
 
 @Composable
@@ -193,16 +195,16 @@ private fun MiniStatText(
         horizontalAlignment = align
     ) {
         Text(
+            text = label,
+            style = MaterialTheme.typography.labelLarge,
+            color = labelColor
+        )
+        Spacer(Modifier.size(4.dp))
+        Text(
             text = value,
             style = MaterialTheme.typography.headlineSmall,
             color = valueColor,
             fontWeight = FontWeight.SemiBold
-        )
-        Spacer(Modifier.size(4.dp))
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelLarge,
-            color = labelColor
         )
     }
 }
