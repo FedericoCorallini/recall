@@ -57,11 +57,9 @@ class QuizViewModel @Inject constructor(
             observeQuestionsUseCase(sourceId).collect { questionList ->
                 if (questionList.isEmpty()) {
                     _uiState.value = QuizUiState.Error("No questions found for this source")
-                } else {
+                } else if (_uiState.value is QuizUiState.Loading) {
                     questions = questionList
-                    if (_uiState.value is QuizUiState.Loading) {
-                        showCurrentQuestion()
-                    }
+                    showCurrentQuestion()
                 }
             }
         }
