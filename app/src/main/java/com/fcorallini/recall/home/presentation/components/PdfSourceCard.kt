@@ -41,12 +41,12 @@ fun PdfSourceCard(
     onRenameClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val cardShape = RoundedCornerShape(24.dp)
+    val cardShape = RoundedCornerShape(12.dp)
 
     Card(
         onClick = onClick,
-        modifier = modifier.fillMaxWidth().height(300.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
+        modifier = modifier.fillMaxWidth().height(240.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         shape = cardShape,
         colors = CardDefaults.cardColors(
             containerColor = Color.Transparent,
@@ -68,7 +68,7 @@ fun PdfSourceCard(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(20.dp),
+                    .padding(14.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Row(
@@ -78,7 +78,7 @@ fun PdfSourceCard(
                     Text(
                         text = source.displayName.uppercase(),
                         style = MaterialTheme.typography.titleMedium,
-                        maxLines = 2,
+                        maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f)
                     )
@@ -99,39 +99,42 @@ fun PdfSourceCard(
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceAround
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    // Left: score ring
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(20.dp)
+                    ) {
+                        MainStatRow(
+                            icon = Icons.Default.CheckCircle,
+                            label = "Practices",
+                            value = source.practiceCount.toString(),
+                            highlight = false,
+                            modifier = Modifier
+                        )
+                        Row(
+                            modifier = Modifier,
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            StatRow(
+                                icon = Icons.Default.Info,
+                                label = "Last practice",
+                                value = source.lastPracticedEpochMs?.let { formatRelativeTime(it) } ?: "Never",
+                                highlight = false
+                            )
+                            Spacer(modifier = Modifier.width(32.dp))
+                            StatRow(
+                                icon = Icons.Default.DateRange,
+                                label = "Created",
+                                value = formatRelativeTime(source.createdAtEpochMs),
+                                highlight = false
+                            )
+                        }
+                    }
                     ScoreRing(
                         progress = source.averageScore.coerceIn(0f, 1f),
                         label = if (source.practiceCount > 0) "Avg score" else "No data",
-                        modifier = Modifier.size(130.dp)
+                        modifier = Modifier.size(110.dp)
                     )
-                    // Right: breakdown (2-3 rows)
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(14.dp)
-                    ) {
-                        StatRow(
-                            icon = Icons.Default.Info,
-                            label = "Last time practiced",
-                            value = source.lastPracticedEpochMs?.let { formatRelativeTime(it) } ?: "Never",
-                            highlight = false
-                        )
-
-                        StatRow(
-                            icon = Icons.Default.DateRange,
-                            label = "Created",
-                            value = formatRelativeTime(source.createdAtEpochMs),
-                            highlight = false
-                        )
-
-                        StatRow(
-                            icon = Icons.Default.CheckCircle,
-                            label = "Total Practices",
-                            value = source.practiceCount.toString(),
-                            highlight = false
-                        )
-                    }
                 }
 
                 // Bottom button
@@ -203,15 +206,43 @@ private fun ScoreRing(
 }
 
 @Composable
+private fun MainStatRow(
+    icon: ImageVector,
+    label: String,
+    value: String,
+    highlight: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.Start
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.End
+        )
+        Text(
+            text = value,
+            style = MaterialTheme.typography.headlineSmall,
+            color = if (highlight) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.End
+        )
+    }
+}
+
+@Composable
 private fun StatRow(
     icon: ImageVector,
     label: String,
     value: String,
-    highlight: Boolean
+    highlight: Boolean,
+    modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.End
+        modifier = modifier,
+        horizontalAlignment = Alignment.Start
     ) {
         Text(
             text = label,
@@ -251,7 +282,7 @@ private fun PdfSourceCardPreview() {
         Surface(color = MaterialTheme.colorScheme.background) {
             val sampleSource = PdfSource(
                 id = "1",
-                displayName = "Exploring Data Visually.pdf",
+                displayName = "Exploring Data Visually Long Text.pdf",
                 uriString = "content://sample/1",
                 createdAtEpochMs = System.currentTimeMillis() - 4 * 24 * 60 * 60 * 1000,
                 practiceCount = 8,
