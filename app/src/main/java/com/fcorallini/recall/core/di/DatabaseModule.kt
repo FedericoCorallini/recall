@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.fcorallini.recall.core.data.db.RecallDatabase
 import com.fcorallini.recall.core.data.db.dao.PdfSourceDao
+import com.fcorallini.recall.core.data.db.dao.PracticeSessionDao
 import com.fcorallini.recall.core.data.db.dao.QuestionDao
 import dagger.Module
 import dagger.Provides
@@ -40,5 +41,11 @@ object DatabaseModule {
     @Singleton
     fun provideQuestionDao(database: RecallDatabase): QuestionDao {
         return database.questionDao()
+    }
+ 
+    @Provides
+    @Singleton
+    fun providePracticeSessionDao(database: RecallDatabase): PracticeSessionDao {
+        return database.practiceSessionDao()
     }
 }

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fcorallini.recall.core.data.common.Result
 import com.fcorallini.recall.home.domain.usecase.GenerateQuizFromPdfUseCase
+import com.fcorallini.recall.home.domain.usecase.ObserveGlobalStatsUseCase
 import com.fcorallini.recall.home.domain.usecase.ObservePdfSourcesUseCase
 import com.fcorallini.recall.home.domain.usecase.DeletePdfSourceUseCase
 import com.fcorallini.recall.home.domain.usecase.RenamePdfSourceUseCase
@@ -19,6 +20,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val generateQuizFromPdfUseCase: GenerateQuizFromPdfUseCase,
     private val observePdfSourcesUseCase: ObservePdfSourcesUseCase,
+    private val observeGlobalStatsUseCase: ObserveGlobalStatsUseCase,
     private val deletePdfSourceUseCase: DeletePdfSourceUseCase,
     private val renamePdfSourceUseCase: RenamePdfSourceUseCase
 ) : ViewModel() {
@@ -28,12 +30,21 @@ class HomeViewModel @Inject constructor(
 
     init {
         observePdfSources()
+        observeGlobalStats()
     }
 
     private fun observePdfSources() {
         viewModelScope.launch {
             observePdfSourcesUseCase().collect { sources ->
                 _state.update { it.copy(pdfSources = sources) }
+            }
+        }
+    }
+ 
+    private fun observeGlobalStats() {
+        viewModelScope.launch {
+            observeGlobalStatsUseCase().collect { stats ->
+                _state.update { it.copy(globalStats = stats) }
             }
         }
     }

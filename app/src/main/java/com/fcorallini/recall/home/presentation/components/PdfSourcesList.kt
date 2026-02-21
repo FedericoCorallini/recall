@@ -31,40 +31,20 @@ fun PdfSourcesList(
 ) {
     val pagerState = rememberPagerState(pageCount = { pdfSources.size })
 
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text("📚 My Quizzes", style = MaterialTheme.typography.headlineMedium)
-            Text(
-                text = "${pdfSources.size} ${if (pdfSources.size == 1) "quiz" else "quizzes"}",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-
-        Spacer(Modifier.height(16.dp))
-
-        HorizontalPager(
-            state = pagerState,
-            contentPadding = PaddingValues(horizontal = 24.dp),
-            pageSpacing = 12.dp,
-            modifier = Modifier.fillMaxWidth().align(Alignment.Center)
-        ) { page ->
-            val source = pdfSources[page]
-            PdfSourceCard(
-                source = source,
-                onClick = { onSourceClick(source.id) },
-                onDeleteClick = { onSourceDelete(source) },
-                onRenameClick = { onSourceRename(source) },
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
+    HorizontalPager(
+        state = pagerState,
+        contentPadding = PaddingValues(horizontal = 24.dp),
+        pageSpacing = 12.dp,
+        modifier = modifier.fillMaxWidth()
+    ) { page ->
+        val source = pdfSources[page]
+        PdfSourceCard(
+            source = source,
+            onClick = { onSourceClick(source.id) },
+            onDeleteClick = { onSourceDelete(source) },
+            onRenameClick = { onSourceRename(source) },
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
