@@ -5,9 +5,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.material3.darkColorScheme
 
 private val RecallColorScheme = darkColorScheme(
-    primary = RecallBluePrimary,
+    primary = RecallIndigo,
     secondary = RecallBlueSecondary,
-    tertiary = RecallIndigo,
+    tertiary = RecallBluePrimary,
     background = RecallBackground,
     surface = RecallSurface,
     surfaceVariant = RecallSurfaceVariant,

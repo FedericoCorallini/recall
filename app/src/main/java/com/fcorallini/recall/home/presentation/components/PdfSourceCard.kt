@@ -49,13 +49,21 @@ fun PdfSourceCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
         shape = cardShape,
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF060606),
+            containerColor = Color.Transparent,
             contentColor = MaterialTheme.colorScheme.onSurface
         )
     ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            Color(0xFF0B1020).copy(alpha = 0.95f),
+                            Color(0xFF1A2240).copy(alpha = 0.85f)
+                        )
+                    )
+                )
         ) {
             Column(
                 modifier = Modifier
