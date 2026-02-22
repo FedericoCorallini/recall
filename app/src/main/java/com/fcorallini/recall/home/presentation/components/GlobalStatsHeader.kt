@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -210,7 +211,7 @@ private fun formatShortRelativeTime(epochMs: Long): ShortRelativeTime {
     val days = hours / 24
  
     return when {
-        minutes < 1 -> ShortRelativeTime("Just", "now")
+        minutes < 1 -> ShortRelativeTime("0", "m ago")
         minutes < 60 -> ShortRelativeTime(minutes.toString(), "m ago")
         hours < 24 -> ShortRelativeTime(hours.toString(), "h ago")
         days < 7 -> ShortRelativeTime(days.toString(), "d ago")
@@ -240,7 +241,7 @@ private fun StatValueWithSuffix(
         if (!suffix.isNullOrBlank()) {
             Text(
                 text = suffix,
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.titleMedium,
                 color = suffixColor,
                 modifier = Modifier
                     .padding(start = 8.dp)
@@ -262,7 +263,7 @@ private fun GlobalStatsHeaderPreview() {
                     streakDays = 2,
                     totalPractices = 1,
                     averageScore = 0.76f,
-                    lastPracticedEpochMs = System.currentTimeMillis() - 2 * 60 * 60 * 1000
+                    lastPracticedEpochMs = System.currentTimeMillis() - 0 * 60 * 60 * 1000
                 ),
                 quizzesCount = 6
             )

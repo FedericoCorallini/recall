@@ -116,7 +116,9 @@ fun HomeContent(
             if (state.pdfSources.isNotEmpty() && !state.isLoading) {
                 FloatingActionButton(
                     onClick = onUploadPdfClick,
-                    shape = CircleShape
+                    shape = CircleShape,
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.secondary
                 ) {
                     Icon(Icons.Default.Add, contentDescription = null)
                 }
