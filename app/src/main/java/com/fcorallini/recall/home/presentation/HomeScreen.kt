@@ -127,6 +127,7 @@ fun HomeContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
+                .padding(vertical = 12.dp)
         ) {
             when {
                 state.isLoading -> {
@@ -138,7 +139,8 @@ fun HomeContent(
                 else -> {
                     Column(
                         modifier = Modifier
-                            .fillMaxSize()
+                            .fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(24.dp)
                     ) {
                         GlobalStatsHeader(
                             stats = state.globalStats,

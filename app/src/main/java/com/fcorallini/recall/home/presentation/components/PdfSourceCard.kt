@@ -25,10 +25,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.fcorallini.recall.core.domain.model.PdfSource
 import com.fcorallini.recall.core.presentation.theme.RecallTheme
 import kotlin.math.roundToInt
@@ -106,7 +108,7 @@ fun PdfSourceCard(
                     ) {
                         MainStatRow(
                             icon = Icons.Default.CheckCircle,
-                            label = "Practices",
+                            label = formatPracticeCount(source.practiceCount),
                             value = source.practiceCount.toString(),
                             highlight = false,
                             modifier = Modifier
@@ -213,20 +215,25 @@ private fun MainStatRow(
     highlight: Boolean,
     modifier: Modifier = Modifier
 ) {
-    Column(
+    Row(
         modifier = modifier,
-        horizontalAlignment = Alignment.Start
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         Text(
-            text = label,
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            text = value,
+            style = MaterialTheme.typography.headlineSmall.copy(
+                fontSize = 20.sp
+            ),
+            color = if (highlight) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.End
         )
         Text(
-            text = value,
-            style = MaterialTheme.typography.headlineSmall,
-            color = if (highlight) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+            text = label,
+            style = MaterialTheme.typography.labelLarge.copy(
+                fontSize = 20.sp
+            ),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.End
         )
     }
@@ -263,7 +270,7 @@ private fun formatRelativeTime(epochMs: Long): String {
     val now = System.currentTimeMillis()
     val diff = (now - epochMs).coerceAtLeast(0)
     val minutes = diff / (60 * 1000)
-    val hours = minutes / 60
+    val hours = minutes / 6
     val days = hours / 24
 
     return when {
@@ -273,6 +280,10 @@ private fun formatRelativeTime(epochMs: Long): String {
         days < 7 -> "$days ${if (days == 1L) "day" else "days"} ago"
         else -> "${days / 7} ${if (days / 7 == 1L) "week" else "weeks"} ago"
     }
+}
+ 
+private fun formatPracticeCount(count: Int): String {
+    return if (count == 1) "Practice" else "Practices"
 }
 
 @Preview(showBackground = true)
