@@ -19,9 +19,20 @@ interface PdfSourceDao {
     @Query("SELECT * FROM pdf_sources WHERE id = :id")
     suspend fun getById(id: String): PdfSourceEntity?
 
-    @Query("SELECT * FROM pdf_sources ORDER BY lastPracticedEpochMs DESC, createdAtEpochMs DESC")
-    fun observeAll(): Flow<List<PdfSourceEntity>>
+    @Query("DELETE FROM pdf_sources WHERE id = :id")
+    suspend fun deleteById(id: String): Int
 
-    @Query("SELECT * FROM pdf_sources ORDER BY lastPracticedEpochMs DESC, createdAtEpochMs DESC")
-    suspend fun getAll(): List<PdfSourceEntity>
+    @Query("UPDATE pdf_sources SET displayName = :displayName WHERE id = :id")
+    suspend fun updateDisplayName(id: String, displayName: String): Int
+
+    @Query("""
+        SELECT * FROM pdf_sources
+        ORDER BY
+            lastPracticedEpochMs IS NOT NULL, 
+            lastPracticedEpochMs ASC,
+            averageScore ASC, 
+            practiceCount ASC,
+            createdAtEpochMs DESC
+    """)
+    fun observeAll(): Flow<List<PdfSourceEntity>>
 }

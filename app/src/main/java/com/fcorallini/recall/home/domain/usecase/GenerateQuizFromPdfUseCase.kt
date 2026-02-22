@@ -15,11 +15,41 @@ class GenerateQuizFromPdfUseCase @Inject constructor(
     private val questionRepository: QuestionRepository,
     private val timeProvider: TimeProvider
 ) {
+    companion object {
+        private const val MAX_PDF_SIZE_BYTES = 25L * 1024 * 1024
+        private const val MAX_PDF_PAGES = 50
+        private const val MAX_QUESTIONS = 50
+        private const val MIN_QUESTIONS = 10
+        private const val PAGES_PER_QUESTION = 1f
+    }
+
     suspend operator fun invoke(uriString: String): Result<String> {
         return try {
-
             val displayName = pdfContentExtractor.extractDisplayName(uriString)
             val pdfBytes = pdfContentExtractor.extractBytes(uriString)
+
+            // Validate PDF size
+            if (pdfBytes.size > MAX_PDF_SIZE_BYTES) {
+                val maxMB = MAX_PDF_SIZE_BYTES / (1024 * 1024)
+                return Result.Error(
+                    Exception(
+                        "PDF is too large. Maximum allowed: ${maxMB}MB. " +
+                            "Please select a smaller file or split the content."
+                    )
+                )
+            }
+
+            // Get page count and calculate questions
+            val pageCount = pdfContentExtractor.getPageCount(uriString)
+            if (pageCount > MAX_PDF_PAGES) {
+                return Result.Error(
+                    Exception(
+                        "PDF is too long. Maximum allowed: $MAX_PDF_PAGES pages. " +
+                            "Please split the document."
+                    )
+                )
+            }
+            val questionCount = calculateQuestionCount(pageCount)
 
             val sourceId = UUID.randomUUID().toString()
 
@@ -33,7 +63,8 @@ class GenerateQuizFromPdfUseCase @Inject constructor(
             val questions = questionRepository.generateQuestionsFromPdf(
                 pdfBytes = pdfBytes,
                 filename = displayName,
-                sourceId = sourceId
+                sourceId = sourceId,
+                questionCount = questionCount
             )
 
             pdfSourceRepository.insert(pdfSource)
@@ -43,5 +74,19 @@ class GenerateQuizFromPdfUseCase @Inject constructor(
         } catch (e: Exception) {
             Result.Error(e)
         }
+    }
+
+    /**
+     * Calculates the number of questions based on page count.
+     * Formula: (pageCount / PAGES_PER_QUESTION), clamped between MIN_QUESTIONS and MAX_QUESTIONS
+     * 
+     * Examples:
+     * - 50 pages → ~14 questions
+     * - 200 pages → ~57 questions  
+     * - 800 pages → 100 questions (capped at max)
+     */
+    private fun calculateQuestionCount(pageCount: Int): Int {
+        val calculated = (pageCount / PAGES_PER_QUESTION).toInt()
+        return calculated.coerceIn(MIN_QUESTIONS, MAX_QUESTIONS)
     }
 }

@@ -11,7 +11,8 @@ interface QuestionRepository {
     suspend fun generateQuestionsFromPdf(
         pdfBytes: ByteArray,
         filename: String,
-        sourceId: String
+        sourceId: String,
+        questionCount: Int
     ): List<Question>
 
     suspend fun submitAnswer(questionId: String, userAnswer: String): Result<Unit>
