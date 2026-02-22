@@ -32,8 +32,10 @@ class GenerateQuizFromPdfUseCase @Inject constructor(
             if (pdfBytes.size > MAX_PDF_SIZE_BYTES) {
                 val maxMB = MAX_PDF_SIZE_BYTES / (1024 * 1024)
                 return Result.Error(
-                    Exception("PDF demasiado grande. Máximo permitido: ${maxMB}MB. " +
-                             "Por favor, selecciona un archivo más pequeño o divide el contenido.")
+                    Exception(
+                        "PDF is too large. Maximum allowed: ${maxMB}MB. " +
+                            "Please select a smaller file or split the content."
+                    )
                 )
             }
 
@@ -42,8 +44,8 @@ class GenerateQuizFromPdfUseCase @Inject constructor(
             if (pageCount > MAX_PDF_PAGES) {
                 return Result.Error(
                     Exception(
-                        "PDF demasiado largo. Máximo permitido: $MAX_PDF_PAGES páginas. " +
-                            "Por favor, divide el documento."
+                        "PDF is too long. Maximum allowed: $MAX_PDF_PAGES pages. " +
+                            "Please split the document."
                     )
                 )
             }

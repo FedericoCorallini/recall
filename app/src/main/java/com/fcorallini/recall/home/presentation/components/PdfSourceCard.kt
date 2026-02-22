@@ -144,7 +144,7 @@ fun PdfSourceCard(
                     onClick = onClick,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Practice Again")
+                    Text("Practice Now")
                 }
             }
         }

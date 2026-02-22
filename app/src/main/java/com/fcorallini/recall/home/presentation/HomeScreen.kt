@@ -210,13 +210,13 @@ private fun HomeLoadingContent() {
             modifier = Modifier.padding(32.dp)
         ) {
             Text(
-                text = "Analizando tu PDF...",
+                text = "Analyzing your PDF...",
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.height(12.dp))
             Text(
-                text = "Estamos generando tus preguntas",
+                text = "We are generating your questions",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

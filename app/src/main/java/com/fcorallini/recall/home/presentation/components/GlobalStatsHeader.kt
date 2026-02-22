@@ -30,8 +30,8 @@ fun GlobalStatsHeader(
     stats: GlobalStats,
     quizzesCount: Int,
     modifier: Modifier = Modifier,
-    title: String = "Progreso",
-    subtitle: String = "Sigue practicando para mantener tu racha"
+    title: String = "Progress",
+    subtitle: String = "Keep practicing to maintain your streak"
 ) {
     val on = MaterialTheme.colorScheme.onSurface
     val labelColor = on.copy(alpha = 0.70f)
@@ -45,7 +45,7 @@ fun GlobalStatsHeader(
         ) {
             Column {
 
-        // Header (círculo + título)
+        // Header (circle + title)
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -64,7 +64,7 @@ fun GlobalStatsHeader(
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
-                    text = "Resumen de tu actividad",
+                    text = "Activity summary",
                     style = MaterialTheme.typography.labelMedium,
                     color = hintColor
                 )
@@ -81,83 +81,72 @@ fun GlobalStatsHeader(
 
         Spacer(Modifier.size(18.dp))
 
-        // Primera fila: Racha (izq) y Eficacia (der)
+        // First row: streak, last time, effectiveness
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // Izquierda
-            Column(modifier = Modifier.weight(1f)) {
+            // Left
+            Column(
+                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.Start
+            ) {
                 Text(
-                    text = "Racha activa",
+                    text = "Last time",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = hintColor
+                )
+
+                Spacer(Modifier.size(4.dp))
+                val lastTime = stats.lastPracticedEpochMs?.let { formatShortRelativeTime(it) }
+                StatValueWithSuffix(
+                    value = lastTime?.value ?: "—",
+                    suffix = lastTime?.suffix,
+                    valueColor = valueColor,
+                    suffixColor = labelColor
+                )
+            }
+
+
+            Spacer(Modifier.size(16.dp))
+
+            // Center
+            Column(
+                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Effectiveness",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = hintColor
+                )
+
+                Spacer(Modifier.size(4.dp))
+                StatValueWithSuffix(
+                    value = formatScoreValue(stats.averageScore),
+                    suffix = formatScoreSuffix(stats.averageScore),
+                    valueColor = valueColor,
+                    suffixColor = labelColor
+                )
+            }
+
+            Spacer(Modifier.size(16.dp))
+
+            // End
+            Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.End) {
+                Text(
+                    text = "Active streak",
                     style = MaterialTheme.typography.labelLarge,
                     color = hintColor
                 )
 
                 Spacer(Modifier.size(4.dp))
 
-                Row(verticalAlignment = Alignment.Bottom) {
-                    Text(
-                        text = if (stats.streakDays == 0) "0" else stats.streakDays.toString(),
-                        style = MaterialTheme.typography.displayMedium,
-                        color = valueColor,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.alignByBaseline()
-                    )
-                    Text(
-                        text = " days",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = labelColor,
-                        modifier = Modifier
-                            .padding(start = 10.dp)
-                            .alignByBaseline()
-                    )
-                }
-            }
-
-            Spacer(Modifier.size(16.dp))
-
-            // Derecha
-            Column(
-                modifier = Modifier.weight(1f),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "Last Time",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = hintColor
-                )
-
-                Spacer(Modifier.size(8.dp))
-
-                Text(
-                    text = stats.lastPracticedEpochMs?.let { formatShortRelativeTime(it) } ?: "Never",
-                    style = MaterialTheme.typography.displayMedium,
-                    color = valueColor,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-
-            Spacer(Modifier.size(16.dp))
-
-            // Derecha
-            Column(
-                modifier = Modifier.weight(1f),
-                horizontalAlignment = Alignment.End
-            ) {
-                Text(
-                    text = "Eficacia",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = hintColor
-                )
-
-                Spacer(Modifier.size(8.dp))
-
-                Text(
-                    text = formatScore(stats.averageScore),
-                    style = MaterialTheme.typography.displayMedium,
-                    color = valueColor,
-                    fontWeight = FontWeight.SemiBold
+                StatValueWithSuffix(
+                    value = if (stats.streakDays == 0) "0" else stats.streakDays.toString(),
+                    suffix = "days",
+                    valueColor = valueColor,
+                    suffixColor = labelColor
                 )
             }
         }
@@ -201,27 +190,67 @@ private fun MiniStatText(
     }
 }
 
-private fun formatScore(score: Float): String {
+private fun formatScoreValue(score: Float): String {
     if (score <= 0f) return "—"
     val percent = (score * 100).roundToInt()
-    return "$percent%"
+    return percent.toString()
 }
-
-private fun formatShortRelativeTime(epochMs: Long): String {
+ 
+private fun formatScoreSuffix(score: Float): String? {
+    return if (score <= 0f) null else "%"
+}
+ 
+private data class ShortRelativeTime(val value: String, val suffix: String?)
+ 
+private fun formatShortRelativeTime(epochMs: Long): ShortRelativeTime {
     val now = System.currentTimeMillis()
     val diff = (now - epochMs).coerceAtLeast(0)
     val minutes = diff / (60 * 1000)
     val hours = minutes / 60
     val days = hours / 24
-
+ 
     return when {
-        minutes < 1 -> "Recién"
-        minutes < 60 -> "${minutes}m"
-        hours < 24 -> "${hours}h"
-        days < 7 -> "${days}d"
-        else -> "${days / 7} sem"
+        minutes < 1 -> ShortRelativeTime("Just", "now")
+        minutes < 60 -> ShortRelativeTime(minutes.toString(), "m ago")
+        hours < 24 -> ShortRelativeTime(hours.toString(), "h ago")
+        days < 7 -> ShortRelativeTime(days.toString(), "d ago")
+        else -> ShortRelativeTime((days / 7).toString(), "w ago")
     }
 }
+ 
+@Composable
+private fun StatValueWithSuffix(
+    value: String,
+    suffix: String?,
+    valueColor: Color,
+    suffixColor: Color,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.Bottom
+    ) {
+        Text(
+            text = value,
+            style = MaterialTheme.typography.displayMedium,
+            color = valueColor,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.alignByBaseline()
+        )
+        if (!suffix.isNullOrBlank()) {
+            Text(
+                text = suffix,
+                style = MaterialTheme.typography.titleLarge,
+                color = suffixColor,
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .alignByBaseline()
+            )
+        }
+    }
+}
+
+// formatShortRelativeTime moved above to return value/suffix
 
 @Preview(showBackground = true)
 @Composable
