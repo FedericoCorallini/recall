@@ -4,11 +4,11 @@ An Android app that creates and runs quizzes/flashcards from PDFs using Kotlin a
 
 ## Overview
 
-Recall is an educational app that transforms PDF documents into interactive quizzes and flashcards. This version uses the OpenAI API to generate real questions from PDFs while preserving the existing Room-based tracking of quiz stats.
+Recall is an educational app that transforms PDF documents into interactive quizzes and flashcards. It helps reinforce weaker knowledge by prioritizing topics you haven't practiced recently and questions you miss most often. This version uses the OpenAI API to generate real questions from PDFs while preserving the existing Room-based tracking of quiz stats.
 
 ## Main Features
 
-- **PDF Source Library**: View all previously uploaded PDFs in a scrollable list
+- **PDF Source Library**: View all previously uploaded PDFs
 - **Practice Statistics**: Each PDF shows:
   - Number of times practiced
   - Average score percentage
@@ -19,9 +19,8 @@ Recall is an educational app that transforms PDF documents into interactive quiz
 - Real-time updates when quiz statistics change
 
 - Clean, modern UI with Material 3 design
-- PDF file picker integration (restricted to application/pdf)
-- Automatic quiz generation from selected PDFs
-- Loading states with progress indicators
+- PDF file picker integration 
+- Automatic quiz generation from selected PDFs using OpenAI
 
 
 ## Screens
@@ -41,7 +40,7 @@ Recall is an educational app that transforms PDF documents into interactive quiz
 - **Navigation**: Jetpack Navigation Compose
 - **Async**: Kotlin Coroutines + Flow
 - **Architecture**: MVVM + Clean Architecture
-## OpenAI PDF Question Generation (How It Works)
+## OpenAI PDF Question Generation
 
 This app generates questions from PDFs using the OpenAI **Files** and **Responses** APIs with strict JSON schema output.
 ### 1) Pick a PDF (Storage Access Framework)
