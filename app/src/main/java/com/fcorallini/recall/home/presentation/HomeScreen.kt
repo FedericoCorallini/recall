@@ -3,6 +3,8 @@ package com.fcorallini.recall.home.presentation
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,11 +38,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.compose.rememberNavController
+import com.fcorallini.recall.R
 import com.fcorallini.recall.core.domain.model.PdfSource
 import com.fcorallini.recall.core.domain.model.GlobalStats
+import com.fcorallini.recall.core.presentation.navigation.RecallNavGraph
 import com.fcorallini.recall.home.presentation.components.EmptyHomeContent
 import com.fcorallini.recall.home.presentation.components.GlobalStatsHeader
 import com.fcorallini.recall.home.presentation.components.PdfSourcesList
@@ -213,14 +221,15 @@ private fun HomeLoadingContent() {
         ) {
             Text(
                 text = "Analyzing your PDF...",
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onSurface
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.secondary
             )
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = "We are generating your questions",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.height(32.dp))
             CircularProgressIndicator(
@@ -238,14 +247,14 @@ private fun HomeLoadingContent() {
 @Composable
 private fun HomeLoadingPreview() {
     RecallTheme {
-        Scaffold { paddingValues ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-            ) {
-                HomeLoadingContent()
-            }
+        Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.95f))) {
+            Image(
+                painter = painterResource(R.drawable.blue_back3),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop,
+            )
+            HomeLoadingContent()
         }
     }
 }
@@ -276,6 +285,30 @@ private fun HomeStatsPreview() {
                         averageScore = 0.82f
                     )
                 ),
+                globalStats = GlobalStats(
+                    streakDays = 4,
+                    totalPractices = 12,
+                    averageScore = 0.76f,
+                    lastPracticedEpochMs = System.currentTimeMillis() - 2 * 60 * 60 * 1000
+                )
+            ),
+            snackbarHostState = remember { SnackbarHostState() },
+            onNavigateToQuiz = {},
+            onUploadPdfClick = {},
+            onDeleteSource = {},
+            onRenameSource = { _, _ -> }
+        )
+    }
+}
+
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+private fun HomeEmptyPreview() {
+    RecallTheme {
+        HomeContent(
+            state = HomeState(
+                pdfSources = emptyList(),
                 globalStats = GlobalStats(
                     streakDays = 4,
                     totalPractices = 12,
