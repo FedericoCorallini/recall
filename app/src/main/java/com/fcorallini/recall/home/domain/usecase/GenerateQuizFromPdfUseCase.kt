@@ -16,9 +16,9 @@ class GenerateQuizFromPdfUseCase @Inject constructor(
     private val timeProvider: TimeProvider
 ) {
     companion object {
-        // OpenAI limit for PDF input is ~50MB, we use 45MB to be safe
-        private const val MAX_PDF_SIZE_BYTES = 45L * 1024 * 1024
-        private const val MAX_QUESTIONS = 100
+        private const val MAX_PDF_SIZE_BYTES = 25L * 1024 * 1024
+        private const val MAX_PDF_PAGES = 50
+        private const val MAX_QUESTIONS = 50
         private const val MIN_QUESTIONS = 10
         private const val PAGES_PER_QUESTION = 1f
     }
@@ -32,13 +32,23 @@ class GenerateQuizFromPdfUseCase @Inject constructor(
             if (pdfBytes.size > MAX_PDF_SIZE_BYTES) {
                 val maxMB = MAX_PDF_SIZE_BYTES / (1024 * 1024)
                 return Result.Error(
-                    Exception("PDF demasiado grande. Máximo permitido: ${maxMB}MB. " +
-                             "Por favor, selecciona un archivo más pequeño o divide el contenido.")
+                    Exception(
+                        "PDF is too large. Maximum allowed: ${maxMB}MB. " +
+                            "Please select a smaller file or split the content."
+                    )
                 )
             }
 
             // Get page count and calculate questions
             val pageCount = pdfContentExtractor.getPageCount(uriString)
+            if (pageCount > MAX_PDF_PAGES) {
+                return Result.Error(
+                    Exception(
+                        "PDF is too long. Maximum allowed: $MAX_PDF_PAGES pages. " +
+                            "Please split the document."
+                    )
+                )
+            }
             val questionCount = calculateQuestionCount(pageCount)
 
             val sourceId = UUID.randomUUID().toString()

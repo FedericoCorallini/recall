@@ -23,7 +23,7 @@ import javax.inject.Singleton
 object NetworkModule {
 
     private const val OPENAI_BASE_URL = "https://api.openai.com/"
-    private const val TIMEOUT_SECONDS = 120L
+    private const val TIMEOUT_SECONDS = 300L
 
     @Provides
     @Singleton
@@ -64,6 +64,7 @@ object NetworkModule {
             .connectTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .readTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .writeTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .callTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .build()
     }
 

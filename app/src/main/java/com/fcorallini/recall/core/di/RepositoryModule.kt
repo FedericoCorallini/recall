@@ -2,9 +2,11 @@ package com.fcorallini.recall.core.di
 
 import com.fcorallini.recall.home.data.extractor.PdfContentExtractorImpl
 import com.fcorallini.recall.core.data.repository.PdfSourceRepositoryImpl
+import com.fcorallini.recall.core.data.repository.PracticeSessionRepositoryImpl
 import com.fcorallini.recall.core.data.repository.QuestionRepositoryImpl
 import com.fcorallini.recall.home.domain.extractor.PdfContentExtractor
 import com.fcorallini.recall.core.domain.repository.PdfSourceRepository
+import com.fcorallini.recall.core.domain.repository.PracticeSessionRepository
 import com.fcorallini.recall.core.domain.repository.QuestionRepository
 import dagger.Binds
 import dagger.Module
@@ -27,6 +29,12 @@ abstract class RepositoryModule {
     abstract fun bindQuestionRepository(
         impl: QuestionRepositoryImpl
     ): QuestionRepository
+ 
+    @Binds
+    @Singleton
+    abstract fun bindPracticeSessionRepository(
+        impl: PracticeSessionRepositoryImpl
+    ): PracticeSessionRepository
 
     @Binds
     @Singleton

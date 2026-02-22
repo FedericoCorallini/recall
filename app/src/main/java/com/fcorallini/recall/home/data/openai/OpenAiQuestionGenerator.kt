@@ -169,14 +169,16 @@ class OpenAiQuestionGenerator @Inject constructor(
         sourceId: String,
         index: Int
     ): Question {
-        if (generatedQuestion.options.size != 4) {
+        val normalizedOptions = generatedQuestion.options.map { it.trim() }
+        val normalizedAnswer = generatedQuestion.answer.trim()
+        if (normalizedOptions.size != 4) {
             throw IllegalArgumentException(
-                "Question $index: must have exactly 4 options, got ${generatedQuestion.options.size}"
+                "Question $index: must have exactly 4 options, got ${normalizedOptions.size}"
             )
         }
-        if (!generatedQuestion.options.contains(generatedQuestion.answer)) {
+        if (!normalizedOptions.contains(normalizedAnswer)) {
             throw IllegalArgumentException(
-                "Question $index: Answer '${generatedQuestion.answer}' is not in options"
+                "Question $index: Answer '$normalizedAnswer' is not in options"
             )
         }
 
@@ -185,8 +187,8 @@ class OpenAiQuestionGenerator @Inject constructor(
             sourceId = sourceId,
             type = QuestionType.MULTIPLE_CHOICE,
             prompt = generatedQuestion.prompt,
-            options = generatedQuestion.options,
-            answer = generatedQuestion.answer,
+            options = normalizedOptions,
+            answer = normalizedAnswer,
             stats = QuestionStats()
         )
     }

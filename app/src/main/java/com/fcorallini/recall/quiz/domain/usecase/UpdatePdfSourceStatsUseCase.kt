@@ -12,7 +12,10 @@ class UpdatePdfSourceStatsUseCase @Inject constructor(
         correctCount: Int,
         totalCount: Int
     ): Result<Unit> {
-        val score = if (totalCount > 0) correctCount.toFloat() / totalCount.toFloat() else 0f
-        return pdfSourceRepository.updatePdfSourceStats(sourceId, score)
+        return pdfSourceRepository.updatePdfSourceStats(
+            sourceId = sourceId,
+            correctCount = correctCount,
+            totalCount = totalCount
+        )
     }
 }
