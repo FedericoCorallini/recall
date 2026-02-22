@@ -26,11 +26,11 @@ Recall is an educational app that transforms PDF documents into interactive quiz
 
 ## Screens
 
-| Home | Generation |
-| --- | --- |
-| ![Home](./app/src/main/res/drawable/home.png) | ![Generation](./app/src/main/res/drawable/generation.png) |
-| Upload | Questions |
-| ![Upload](./app/src/main/res/drawable/upload.png) | ![Questions](./app/src/main/res/drawable/questions.png) |
+| Welcome                                       | Generation                                                |
+|-----------------------------------------------|-----------------------------------------------------------|
+| ![Upload](./app/src/main/res/drawable/upload.png)| ![Generation](./app/src/main/res/drawable/generation.png) |
+| Home                                          | Questions                                                 |
+| ![Home](./app/src/main/res/drawable/home.png) | ![Questions](./app/src/main/res/drawable/questions.png)   |
 
 ## Tech Stack
 
