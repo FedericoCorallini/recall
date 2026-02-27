@@ -38,7 +38,8 @@ import kotlin.math.roundToInt
 @Composable
 fun PdfSourceCard(
     source: PdfSource,
-    onClick: () -> Unit,
+    onCardClick: () -> Unit,
+    onPrimaryActionClick: () -> Unit = onCardClick,
     onDeleteClick: () -> Unit = {},
     onRenameClick: () -> Unit = {},
     modifier: Modifier = Modifier
@@ -46,7 +47,7 @@ fun PdfSourceCard(
     val cardShape = RoundedCornerShape(12.dp)
 
     Card(
-        onClick = onClick,
+        onClick = onCardClick,
         modifier = modifier.fillMaxWidth().height(240.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         shape = cardShape,
@@ -141,7 +142,7 @@ fun PdfSourceCard(
 
                 // Bottom button
                 Button(
-                    onClick = onClick,
+                    onClick = onPrimaryActionClick,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Practice Now")
@@ -303,7 +304,8 @@ private fun PdfSourceCardPreview() {
 
             PdfSourceCard(
                 source = sampleSource,
-                onClick = {},
+                onCardClick = {},
+                onPrimaryActionClick = {},
                 onDeleteClick = {},
                 onRenameClick = {}
             )

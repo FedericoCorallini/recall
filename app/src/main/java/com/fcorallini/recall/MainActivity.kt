@@ -25,9 +25,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             RecallTheme {
-                Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.95f))) {
+                Box() {
                     Image(
-                        painter = painterResource(R.drawable.blue_back3),
+                        painter = painterResource(R.drawable.last_back),
                         contentDescription = null,
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop,

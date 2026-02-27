@@ -1,22 +1,26 @@
 package com.fcorallini.recall.home.presentation.components
 
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.fcorallini.recall.core.domain.model.PdfSource
 import com.fcorallini.recall.core.presentation.theme.RecallTheme
 
@@ -27,24 +31,58 @@ fun PdfSourcesList(
     onSourceClick: (String) -> Unit,
     onSourceDelete: (PdfSource) -> Unit = {},
     onSourceRename: (PdfSource) -> Unit = {},
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    overlap: Dp = 80.dp,
+    cardHeight: Dp = 240.dp
 ) {
-    val pagerState = rememberPagerState(pageCount = { pdfSources.size })
-
-    HorizontalPager(
-        state = pagerState,
-        contentPadding = PaddingValues(horizontal = 24.dp),
-        pageSpacing = 12.dp,
+    var selectedId by remember { mutableStateOf<String?>(null) }
+    val listState = rememberLazyListState()
+    val selectedIndex = selectedId?.let { id ->
+        pdfSources.indexOfFirst { it.id == id }
+    } ?: -1
+    val hasSelection = selectedIndex >= 0
+    val step = cardHeight - overlap
+ 
+    LaunchedEffect(selectedIndex) {
+        if (selectedIndex >= 0) {
+            listState.animateScrollToItem(0)
+        }
+    }
+ 
+    LazyColumn(
+        state = listState,
+        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(-overlap),
         modifier = modifier.fillMaxWidth()
-    ) { page ->
-        val source = pdfSources[page]
-        PdfSourceCard(
-            source = source,
-            onClick = { onSourceClick(source.id) },
-            onDeleteClick = { onSourceDelete(source) },
-            onRenameClick = { onSourceRename(source) },
-            modifier = Modifier.fillMaxWidth()
-        )
+    ) {
+        itemsIndexed(
+            items = pdfSources,
+            key = { _, source -> source.id }
+        ) { index, source ->
+            val isSelected = source.id == selectedId
+            val targetOffset = when {
+                !hasSelection -> 0.dp
+                isSelected -> (-step * selectedIndex)
+                else -> 0.dp
+            }
+            val animatedOffset by animateDpAsState(targetValue = targetOffset, label = "cardOffset")
+            val targetAlpha = if (hasSelection && !isSelected) 0f else 1f
+            val animatedAlpha by animateFloatAsState(targetValue = targetAlpha, label = "cardAlpha")
+            PdfSourceCard(
+                source = source,
+                onCardClick = {
+                    selectedId = if (isSelected) null else source.id
+                },
+                onPrimaryActionClick = { onSourceClick(source.id) },
+                onDeleteClick = { onSourceDelete(source) },
+                onRenameClick = { onSourceRename(source) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .offset(y = animatedOffset)
+                    .alpha(animatedAlpha)
+                    .zIndex(if (isSelected) 1f else 0f)
+            )
+        }
     }
 }
 

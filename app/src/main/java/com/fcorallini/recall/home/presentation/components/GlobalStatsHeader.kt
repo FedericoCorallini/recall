@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -44,106 +45,44 @@ fun GlobalStatsHeader(
     val valueColor = on.copy(alpha = 0.95f)
 
     Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp)
-        ) {
-            Column {
-
-        // Header (circle + title)
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(52.dp)
-                    .clip(CircleShape)
-            ){
-                Image(
-                    painter = painterResource(R.drawable.r_logo),
-                    contentDescription = null,
-                    modifier = Modifier.size(44.dp).align(Alignment.Center),
-                    contentScale = ContentScale.Crop
-                )
-            }
-            Column(Modifier.padding(start = 12.dp)) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = valueColor,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Text(
-                    text = "Activity summary",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = hintColor
-                )
-            }
-            MiniStatText(
-                value = quizzesCount.toString(),
-                label = "Quizzes",
-                valueColor = valueColor,
-                labelColor = hintColor,
-                align = Alignment.End,
-                modifier = Modifier.weight(1f)
-            )
-        }
-
-        Spacer(Modifier.size(18.dp))
-
-        // First row: streak, last time, effectiveness
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 18.dp)
+    ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.spacedBy(20.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            // Left
-            Column(
-                modifier = Modifier.weight(1f),
-                horizontalAlignment = Alignment.Start
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.weight(1f)
             ) {
-                Text(
-                    text = "Last time",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = hintColor
-                )
-
-                Spacer(Modifier.size(4.dp))
-                val lastTime = stats.lastPracticedEpochMs?.let { formatShortRelativeTime(it) }
-                StatValueWithSuffix(
-                    value = lastTime?.value ?: "—",
-                    suffix = lastTime?.suffix,
-                    valueColor = valueColor,
-                    suffixColor = labelColor
-                )
+                Box(
+                    modifier = Modifier
+                        .size(68.dp)
+                        .clip(CircleShape)
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.white_logo),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(58.dp)
+                            .align(Alignment.Center),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+                Column(Modifier.padding(start = 4.dp)) {
+                    Text(
+                        text = "Recall",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = valueColor,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
             }
 
-
-            Spacer(Modifier.size(16.dp))
-
-            // Center
-            Column(
-                modifier = Modifier.weight(1f),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "Effectiveness",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = hintColor
-                )
-
-                Spacer(Modifier.size(4.dp))
-                StatValueWithSuffix(
-                    value = formatScoreValue(stats.averageScore),
-                    suffix = formatScoreSuffix(stats.averageScore),
-                    valueColor = valueColor,
-                    suffixColor = labelColor
-                )
-            }
-
-            Spacer(Modifier.size(16.dp))
-
-            // End
-            Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.End) {
+            Column(horizontalAlignment = Alignment.End) {
                 Text(
                     text = "Active streak",
                     style = MaterialTheme.typography.labelLarge,
@@ -159,17 +98,27 @@ fun GlobalStatsHeader(
                     suffixColor = labelColor
                 )
             }
-        }
 
-        Spacer(Modifier.size(14.dp))
+            Column(
+                horizontalAlignment = Alignment.End
+            ) {
+                Text(
+                    text = "Effectiveness",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = hintColor
+                )
 
-        Text(
-            text = subtitle,
-            style = MaterialTheme.typography.labelMedium,
-            color = hintColor
-        )
+                Spacer(Modifier.size(4.dp))
+                StatValueWithSuffix(
+                    value = formatScoreValue(stats.averageScore),
+                    suffix = formatScoreSuffix(stats.averageScore),
+                    valueColor = valueColor,
+                    suffixColor = labelColor
+                )
             }
         }
+
+    }
 }
 
 @Composable
@@ -205,20 +154,20 @@ private fun formatScoreValue(score: Float): String {
     val percent = (score * 100).roundToInt()
     return percent.toString()
 }
- 
+
 private fun formatScoreSuffix(score: Float): String? {
     return if (score <= 0f) null else "%"
 }
- 
+
 private data class ShortRelativeTime(val value: String, val suffix: String?)
- 
+
 private fun formatShortRelativeTime(epochMs: Long): ShortRelativeTime {
     val now = System.currentTimeMillis()
     val diff = (now - epochMs).coerceAtLeast(0)
     val minutes = diff / (60 * 1000)
     val hours = minutes / 60
     val days = hours / 24
- 
+
     return when {
         minutes < 1 -> ShortRelativeTime("0", "m ago")
         minutes < 60 -> ShortRelativeTime(minutes.toString(), "m ago")
@@ -227,7 +176,7 @@ private fun formatShortRelativeTime(epochMs: Long): ShortRelativeTime {
         else -> ShortRelativeTime((days / 7).toString(), "w ago")
     }
 }
- 
+
 @Composable
 private fun StatValueWithSuffix(
     value: String,
@@ -253,7 +202,7 @@ private fun StatValueWithSuffix(
                 style = MaterialTheme.typography.titleMedium,
                 color = suffixColor,
                 modifier = Modifier
-                    .padding(start = 8.dp)
+                    .padding(start = 6.dp)
                     .alignByBaseline()
             )
         }
@@ -266,7 +215,7 @@ private fun StatValueWithSuffix(
 @Composable
 private fun GlobalStatsHeaderPreview() {
     RecallTheme {
-        Box(modifier = Modifier.padding(16.dp)) {
+        Box() {
             GlobalStatsHeader(
                 stats = GlobalStats(
                     streakDays = 2,

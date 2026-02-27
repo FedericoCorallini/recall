@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -149,13 +150,13 @@ fun HomeContent(
                 else -> {
                     Column(
                         modifier = Modifier
-                            .fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(24.dp)
+                            .fillMaxSize().padding(vertical = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(86.dp)
                     ) {
                         GlobalStatsHeader(
                             stats = state.globalStats,
                             quizzesCount = state.pdfSources.size,
-                            modifier = Modifier.padding(24.dp)
+                            modifier = Modifier
                         )
                         PdfSourcesList(
                             pdfSources = state.pdfSources,
@@ -164,7 +165,10 @@ fun HomeContent(
                             onSourceRename = { source ->
                                 renameTarget = source
                                 renameText = source.displayName
-                            }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
                         )
                     }
                 }
