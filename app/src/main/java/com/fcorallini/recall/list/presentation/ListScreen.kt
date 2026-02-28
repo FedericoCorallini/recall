@@ -38,6 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.fcorallini.recall.R
+import com.fcorallini.recall.home.presentation.components.CurvedNavigationBarWithFab
 import com.fcorallini.recall.core.domain.model.PdfSource
 import com.fcorallini.recall.core.presentation.theme.RecallTheme
 import com.fcorallini.recall.list.presentation.components.PdfSourcesList
@@ -95,22 +96,14 @@ fun ListContent(
         containerColor = Color(0xFF242424),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
-            NavigationBar(
-                containerColor = Color(0xFF141414).copy(alpha = 0.2f)
-            ) {
-                NavigationBarItem(
-                    selected = false,
-                    onClick = onNavigateToHome,
-                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-                    label = { Text("Home") }
-                )
-                NavigationBarItem(
-                    selected = true,
-                    onClick = {},
-                    icon = { Icon(Icons.Default.List, contentDescription = "Quizzes") },
-                    label = { Text("Quizzes") }
-                )
-            }
+            CurvedNavigationBarWithFab(
+                isHomeSelected = false,
+                isListSelected = true,
+                onHomeClick = onNavigateToHome,
+                onListClick = { /* Already on List */ },
+                onFabClick = { /* No action on List screen */ },
+                showFab = false
+            )
         }
     ) { paddingValues ->
         Box(

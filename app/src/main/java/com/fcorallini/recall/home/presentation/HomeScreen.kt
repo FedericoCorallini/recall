@@ -55,6 +55,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.fcorallini.recall.R
 import com.fcorallini.recall.core.domain.model.PdfSource
 import com.fcorallini.recall.core.domain.model.GlobalStats
+import com.fcorallini.recall.home.presentation.components.CurvedNavigationBarWithFab
 import com.fcorallini.recall.home.presentation.components.EmptyHomeContent
 import com.fcorallini.recall.home.presentation.components.GlobalStatsHeader
 import com.fcorallini.recall.list.presentation.components.PdfSourceCard
@@ -129,37 +130,16 @@ fun HomeContent(
     Scaffold(
         containerColor = Color.Transparent,
         snackbarHost = { SnackbarHost(snackbarHostState) },
-        floatingActionButton = {
-            if (state.pdfSources.isNotEmpty() && !state.isLoading) {
-                FloatingActionButton(
-                    onClick = onUploadPdfClick,
-                    shape = CircleShape,
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.secondary
-                ) {
-                    Icon(Icons.Default.Add, contentDescription = null)
-                }
-            }
-        },
         bottomBar = {
-            NavigationBar(
-                containerColor = Color(0xFF141414).copy(alpha = 0.2f)
-            ) {
-                NavigationBarItem(
-                    selected = true,
-                    onClick = {},
-                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-                    label = { Text("Home") }
-                )
-                NavigationBarItem(
-                    selected = false,
-                    onClick = onNavigateToList,
-                    icon = { Icon(Icons.Default.List, contentDescription = "Quizzes") },
-                    label = { Text("Quizzes") }
-                )
-            }
+            CurvedNavigationBarWithFab(
+                isHomeSelected = true,
+                isListSelected = false,
+                onHomeClick = { /* Already on Home */ },
+                onListClick = onNavigateToList,
+                onFabClick = onUploadPdfClick,
+                showFab = state.pdfSources.isNotEmpty() && !state.isLoading
+            )
         }
-
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -250,8 +230,7 @@ private fun HomeMainContent(
             mostRecentSource?.let { source ->
                 PdfSourceCard(
                     source = source,
-                    onCardClick = { },
-                    onPrimaryActionClick = { onNavigateToQuiz(source.id) },
+                    onCardClick = { onNavigateToQuiz(source.id) },
                     onDeleteClick = { onDeleteSource(source.id) },
                     onRenameClick = { onRenameSource(source) },
                     modifier = Modifier.fillMaxWidth()

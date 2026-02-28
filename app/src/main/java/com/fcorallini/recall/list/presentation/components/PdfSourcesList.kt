@@ -2,6 +2,7 @@ package com.fcorallini.recall.list.presentation.components
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,13 +18,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.fcorallini.recall.core.domain.model.PdfSource
 import com.fcorallini.recall.core.presentation.theme.RecallTheme
 
+val cardColors = listOf(
+    Color(0xFF5B8AD8),
+    Color(0xFFD3D6DB),
+    Color(0xFF9B7ED8),
+    Color(0xFFD9BF25),
+    Color(0xFF279696),
+    Color(0xFFD65A5A),
+    Color(0xFF55AD59),
+)
 
 @Composable
 fun PdfSourcesList(
@@ -32,7 +43,7 @@ fun PdfSourcesList(
     onSourceDelete: (PdfSource) -> Unit = {},
     onSourceRename: (PdfSource) -> Unit = {},
     modifier: Modifier = Modifier,
-    overlap: Dp = 80.dp,
+    overlap: Dp = 40.dp,
     cardHeight: Dp = 240.dp
 ) {
     var selectedId by remember { mutableStateOf<String?>(null) }
@@ -51,9 +62,9 @@ fun PdfSourcesList(
  
     LazyColumn(
         state = listState,
-        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp),
+        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(-overlap),
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth().background(Color(0xFF242424))
     ) {
         itemsIndexed(
             items = pdfSources,
@@ -73,9 +84,9 @@ fun PdfSourcesList(
                 onCardClick = {
                     selectedId = if (isSelected) null else source.id
                 },
-                onPrimaryActionClick = { onSourceClick(source.id) },
                 onDeleteClick = { onSourceDelete(source) },
                 onRenameClick = { onSourceRename(source) },
+                cardColor = cardColors[index % cardColors.size],
                 modifier = Modifier
                     .fillMaxWidth()
                     .offset(y = animatedOffset)
