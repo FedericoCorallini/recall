@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.compose.rememberNavController
@@ -28,6 +29,11 @@ class MainActivity : ComponentActivity() {
                 Box(Modifier.background(
                     color = Color(0xFF242424)
                 )) {
+                    Image(
+                        painterResource(R.drawable.home),
+                        contentDescription = "",
+                        modifier = Modifier.scale(scaleY = 1.15f, scaleX = 1.5f)
+                    )
                     val navController = rememberNavController()
                     RecallNavGraph(navController = navController)
                 }

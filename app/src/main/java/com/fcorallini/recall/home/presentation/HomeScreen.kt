@@ -1,5 +1,6 @@
 package com.fcorallini.recall.home.presentation
 
+import android.media.Image
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -131,14 +132,27 @@ fun HomeContent(
         containerColor = Color.Transparent,
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
-            CurvedNavigationBarWithFab(
-                isHomeSelected = true,
-                isListSelected = false,
-                onHomeClick = { /* Already on Home */ },
-                onListClick = onNavigateToList,
-                onFabClick = onUploadPdfClick,
-                showFab = state.pdfSources.isNotEmpty() && !state.isLoading
-            )
+            NavigationBar {
+                NavigationBarItem(
+                    selected = true,
+                    onClick = { /* Already on Home */ },
+                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
+                    label = { Text("Home") }
+                )
+                NavigationBarItem(
+                    selected = false,
+                    onClick = onUploadPdfClick,
+                    icon = { Icon(Icons.Default.Add, contentDescription = "Add PDF") },
+                    label = { Text("Add") },
+                    enabled = state.pdfSources.isNotEmpty() && !state.isLoading
+                )
+                NavigationBarItem(
+                    selected = false,
+                    onClick = onNavigateToList,
+                    icon = { Icon(Icons.Default.List, contentDescription = "Quizzes") },
+                    label = { Text("Quizzes") }
+                )
+            }
         }
     ) { paddingValues ->
         Box(
@@ -223,6 +237,7 @@ private fun HomeMainContent(
                 .padding(vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(86.dp)
         ) {
+
             GlobalStatsHeader(
                 stats = state.globalStats
             )

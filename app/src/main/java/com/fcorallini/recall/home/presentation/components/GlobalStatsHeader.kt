@@ -48,21 +48,21 @@ fun GlobalStatsHeader(
         Row(
             modifier = Modifier.fillMaxWidth().height(120.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Top
         ) {
             Column {
                 Box(
                     modifier = Modifier
                         .height(48.dp)
-                        .width(180.dp)
+                        .width(160.dp)
                         .clip(CircleShape)
                 ) {
                     Image(
                         painter = painterResource(R.drawable.logo_new),
                         contentDescription = null,
                         modifier = Modifier
-                            .size(90.dp)
-                            .padding(end = 8.dp)
-                            .align(Alignment.TopStart),
+                            .size(135.dp)
+                            .align(Alignment.BottomCenter),
                         contentScale = ContentScale.Inside
                     )
                 }
@@ -71,14 +71,13 @@ fun GlobalStatsHeader(
             Column(
                 horizontalAlignment = Alignment.End,
             ) {
-                Spacer(Modifier.size(10.dp))
                 Text(
                     text = "Active streak",
-                    style = MaterialTheme.typography.labelMedium,
+                    style = MaterialTheme.typography.labelLarge,
                     color = hintColor
                 )
 
-                Spacer(Modifier.size(4.dp))
+                Spacer(Modifier.size(6.dp))
 
                 StatValueWithSuffix(
                     value = if (stats.streakDays == 0) "0" else stats.streakDays.toString(),
@@ -91,14 +90,13 @@ fun GlobalStatsHeader(
             Column(
                 horizontalAlignment = Alignment.End
             ) {
-                Spacer(Modifier.size(10.dp))
                 Text(
                     text = "Effectiveness",
-                    style = MaterialTheme.typography.labelMedium,
+                    style = MaterialTheme.typography.labelLarge,
                     color = hintColor
                 )
 
-                Spacer(Modifier.size(4.dp))
+                Spacer(Modifier.size(6.dp))
                 StatValueWithSuffix(
                     value = formatScoreValue(stats.averageScore),
                     suffix = formatScoreSuffix(stats.averageScore),
@@ -181,7 +179,7 @@ private fun StatValueWithSuffix(
     ) {
         Text(
             text = value,
-            style = MaterialTheme.typography.displaySmall,
+            style = MaterialTheme.typography.displayMedium,
             color = valueColor,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.alignByBaseline()
@@ -189,10 +187,10 @@ private fun StatValueWithSuffix(
         if (!suffix.isNullOrBlank()) {
             Text(
                 text = suffix,
-                style = MaterialTheme.typography.labelMedium,
+                style = MaterialTheme.typography.labelLarge,
                 color = suffixColor,
                 modifier = Modifier
-                    .padding(start = 2.dp)
+                    .padding(start = 4.dp)
                     .alignByBaseline()
             )
         }
