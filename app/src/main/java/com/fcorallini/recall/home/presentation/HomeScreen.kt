@@ -6,6 +6,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -145,7 +146,7 @@ fun HomeContent(
                     selected = false,
                     onClick = onUploadPdfClick,
                     icon = { Icon(Icons.Default.Add, contentDescription = "Add PDF") },
-                    label = { Text("Add") },
+                    label = { Text("Add PDF") },
                     enabled = state.pdfSources.isNotEmpty() && !state.isLoading
                 )
                 NavigationBarItem(
@@ -258,8 +259,10 @@ private fun HomeMainContent(
                 PdfSourceCard(
                     source = source,
                     onCardClick = { onNavigateToQuiz(source.id) },
+                    onStartPractice = { onNavigateToQuiz(source.id) },
                     onDeleteClick = { onDeleteSource(source.id) },
                     onRenameClick = { onRenameSource(source) },
+                    isHomeCard = true,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 12.dp)
