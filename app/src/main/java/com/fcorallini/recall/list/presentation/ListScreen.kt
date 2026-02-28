@@ -1,0 +1,208 @@
+package com.fcorallini.recall.list.presentation
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.fcorallini.recall.R
+import com.fcorallini.recall.core.domain.model.PdfSource
+import com.fcorallini.recall.core.presentation.theme.RecallTheme
+import com.fcorallini.recall.list.presentation.components.PdfSourcesList
+
+@Composable
+fun ListScreen(
+    onNavigateToQuiz: (String) -> Unit,
+    onNavigateToHome: () -> Unit,
+    viewModel: ListViewModel = hiltViewModel()
+) {
+    val state by viewModel.state.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // Handle error messages
+    LaunchedEffect(state.errorMessage) {
+        state.errorMessage?.let { message ->
+            snackbarHostState.showSnackbar(message)
+            viewModel.onEvent(ListEvent.ResetError)
+        }
+    }
+
+    ListContent(
+        state = state,
+        snackbarHostState = snackbarHostState,
+        onNavigateToQuiz = onNavigateToQuiz,
+        onNavigateToHome = onNavigateToHome,
+        onDeleteSource = { sourceId ->
+            viewModel.onEvent(ListEvent.DeletePdfSource(sourceId))
+        },
+        onRenameSource = { sourceId, newDisplayName ->
+            viewModel.onEvent(
+                ListEvent.RenamePdfSource(
+                    sourceId = sourceId,
+                    newDisplayName = newDisplayName
+                )
+            )
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ListContent(
+    state: ListState,
+    snackbarHostState: SnackbarHostState,
+    onNavigateToQuiz: (String) -> Unit,
+    onNavigateToHome: () -> Unit,
+    onDeleteSource: (String) -> Unit,
+    onRenameSource: (String, String) -> Unit
+) {
+    var renameTarget by remember { mutableStateOf<PdfSource?>(null) }
+    var renameText by remember { mutableStateOf("") }
+
+    Scaffold(
+        containerColor = Color(0xFF242424),
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        bottomBar = {
+            NavigationBar(
+                containerColor = Color(0xFF141414).copy(alpha = 0.2f)
+            ) {
+                NavigationBarItem(
+                    selected = false,
+                    onClick = onNavigateToHome,
+                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
+                    label = { Text("Home") }
+                )
+                NavigationBarItem(
+                    selected = true,
+                    onClick = {},
+                    icon = { Icon(Icons.Default.List, contentDescription = "Quizzes") },
+                    label = { Text("Quizzes") }
+                )
+            }
+        }
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            Column(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Spacer(Modifier.size(160.dp))
+                PdfSourcesList(
+                    pdfSources = state.pdfSources,
+                    onSourceClick = onNavigateToQuiz,
+                    onSourceDelete = { source -> onDeleteSource(source.id) },
+                    onSourceRename = { source ->
+                        renameTarget = source
+                        renameText = source.displayName
+                    },
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+        }
+    }
+
+    if (renameTarget != null) {
+        AlertDialog(
+            onDismissRequest = { renameTarget = null },
+            title = { Text("Rename PDF") },
+            text = {
+                TextField(
+                    value = renameText,
+                    onValueChange = { renameText = it },
+                    singleLine = true,
+                    placeholder = { Text("New name") }
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        val target = renameTarget
+                        if (target != null && renameText.trim().isNotEmpty()) {
+                            onRenameSource(target.id, renameText.trim())
+                        }
+                        renameTarget = null
+                    },
+                    enabled = renameText.trim().isNotEmpty()
+                ) {
+                    Text("Save")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { renameTarget = null }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ListContentPreview() {
+    RecallTheme {
+        val sampleSources = listOf(
+            PdfSource(
+                id = "1",
+                displayName = "Kotlin Coroutines Guide.pdf",
+                uriString = "content://sample/1",
+                createdAtEpochMs = System.currentTimeMillis() - 2 * 24 * 60 * 60 * 1000,
+                practiceCount = 5,
+                lastPracticedEpochMs = System.currentTimeMillis() - 60 * 60 * 1000,
+                averageScore = 0.85f
+            ),
+            PdfSource(
+                id = "2",
+                displayName = "Clean Architecture Principles.pdf",
+                uriString = "content://sample/2",
+                createdAtEpochMs = System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000,
+                practiceCount = 12,
+                lastPracticedEpochMs = System.currentTimeMillis() - 3 * 60 * 60 * 1000,
+                averageScore = 0.92f
+            )
+        )
+
+        ListContent(
+            state = ListState(pdfSources = sampleSources),
+            snackbarHostState = remember { SnackbarHostState() },
+            onNavigateToQuiz = {},
+            onNavigateToHome = {},
+            onDeleteSource = {},
+            onRenameSource = { _, _ -> }
+        )
+    }
+}

@@ -57,12 +57,13 @@ import com.fcorallini.recall.core.domain.model.PdfSource
 import com.fcorallini.recall.core.domain.model.GlobalStats
 import com.fcorallini.recall.home.presentation.components.EmptyHomeContent
 import com.fcorallini.recall.home.presentation.components.GlobalStatsHeader
-import com.fcorallini.recall.home.presentation.components.PdfSourcesList
+import com.fcorallini.recall.list.presentation.components.PdfSourceCard
 import com.fcorallini.recall.core.presentation.theme.RecallTheme
 
 @Composable
 fun HomeScreen(
     onNavigateToQuiz: (String) -> Unit,
+    onNavigateToList: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -96,6 +97,7 @@ fun HomeScreen(
         state = state,
         snackbarHostState = snackbarHostState,
         onNavigateToQuiz = onNavigateToQuiz,
+        onNavigateToList = onNavigateToList,
         onUploadPdfClick = { pdfPickerLauncher.launch(arrayOf("application/pdf")) },
         onDeleteSource = { sourceId ->
             viewModel.onEvent(HomeEvent.DeletePdfSource(sourceId))
@@ -116,6 +118,7 @@ fun HomeContent(
     state: HomeState,
     snackbarHostState: SnackbarHostState,
     onNavigateToQuiz: (String) -> Unit,
+    onNavigateToList: () -> Unit,
     onUploadPdfClick: () -> Unit,
     onDeleteSource: (String) -> Unit,
     onRenameSource: (String, String) -> Unit
@@ -139,7 +142,9 @@ fun HomeContent(
             }
         },
         bottomBar = {
-            NavigationBar {
+            NavigationBar(
+                containerColor = Color(0xFF141414).copy(alpha = 0.2f)
+            ) {
                 NavigationBarItem(
                     selected = true,
                     onClick = {},
@@ -148,7 +153,7 @@ fun HomeContent(
                 )
                 NavigationBarItem(
                     selected = false,
-                    onClick = {},
+                    onClick = onNavigateToList,
                     icon = { Icon(Icons.Default.List, contentDescription = "Quizzes") },
                     label = { Text("Quizzes") }
                 )
@@ -226,35 +231,35 @@ private fun HomeMainContent(
     onDeleteSource: (String) -> Unit,
     onRenameSource: (PdfSource) -> Unit
 ) {
-        Box(
-            modifier = Modifier.fillMaxSize()
-        ){
-            Image(
-                painter = painterResource(id = R.drawable.home),
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize().offset(y = -(24).dp),
-                contentScale = ContentScale.Crop,
+    // Get the most recent PDF source (first in the list, assuming sorted by createdAt)
+    val mostRecentSource = state.pdfSources.firstOrNull()
+
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ){
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(86.dp)
+        ) {
+            GlobalStatsHeader(
+                stats = state.globalStats
             )
-            Column(
-                modifier = Modifier
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(86.dp)
-            ) {
-                GlobalStatsHeader(
-                    stats = state.globalStats
-                )
-                PdfSourcesList(
-                    pdfSources = state.pdfSources,
-                    onSourceClick = onNavigateToQuiz,
-                    onSourceDelete = { source -> onDeleteSource(source.id) },
-                    onSourceRename = { source -> onRenameSource(source) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
+            // Show only the most recent PDF source card
+            mostRecentSource?.let { source ->
+                PdfSourceCard(
+                    source = source,
+                    onCardClick = { },
+                    onPrimaryActionClick = { onNavigateToQuiz(source.id) },
+                    onDeleteClick = { onDeleteSource(source.id) },
+                    onRenameClick = { onRenameSource(source) },
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         }
     }
+}
 
 
 @Composable
@@ -330,6 +335,7 @@ private fun HomeStatsPreview() {
             ),
             snackbarHostState = remember { SnackbarHostState() },
             onNavigateToQuiz = {},
+            onNavigateToList = {},
             onUploadPdfClick = {},
             onDeleteSource = {},
             onRenameSource = { _, _ -> }
@@ -354,6 +360,7 @@ private fun HomeEmptyPreview() {
             ),
             snackbarHostState = remember { SnackbarHostState() },
             onNavigateToQuiz = {},
+            onNavigateToList = {},
             onUploadPdfClick = {},
             onDeleteSource = {},
             onRenameSource = { _, _ -> }

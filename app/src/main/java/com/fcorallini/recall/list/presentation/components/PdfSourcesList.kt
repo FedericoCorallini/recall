@@ -1,4 +1,4 @@
-package com.fcorallini.recall.home.presentation.components
+package com.fcorallini.recall.list.presentation.components
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState

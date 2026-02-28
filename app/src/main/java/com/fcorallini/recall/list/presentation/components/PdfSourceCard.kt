@@ -1,4 +1,4 @@
-package com.fcorallini.recall.home.presentation.components
+package com.fcorallini.recall.list.presentation.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
@@ -271,7 +271,7 @@ private fun formatRelativeTime(epochMs: Long): String {
     val now = System.currentTimeMillis()
     val diff = (now - epochMs).coerceAtLeast(0)
     val minutes = diff / (60 * 1000)
-    val hours = minutes / 6
+    val hours = minutes / 60
     val days = hours / 24
 
     return when {
