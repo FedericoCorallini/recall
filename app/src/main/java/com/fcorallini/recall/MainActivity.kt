@@ -29,11 +29,6 @@ class MainActivity : ComponentActivity() {
                 Box(Modifier.background(
                     color = Color(0xFF242424)
                 )) {
-                    Image(
-                        painterResource(R.drawable.home),
-                        contentDescription = "",
-                        modifier = Modifier.scale(scaleY = 1.15f, scaleX = 1.5f)
-                    )
                     val navController = rememberNavController()
                     RecallNavGraph(navController = navController)
                 }

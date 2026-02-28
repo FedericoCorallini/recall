@@ -44,7 +44,7 @@ fun PdfSourcesList(
     onSourceRename: (PdfSource) -> Unit = {},
     modifier: Modifier = Modifier,
     overlap: Dp = 40.dp,
-    cardHeight: Dp = 240.dp
+    cardHeight: Dp = 192.dp
 ) {
     var selectedId by remember { mutableStateOf<String?>(null) }
     val listState = rememberLazyListState()

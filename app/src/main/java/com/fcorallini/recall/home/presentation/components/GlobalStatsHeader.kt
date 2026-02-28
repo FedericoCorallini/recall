@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,36 +37,33 @@ fun GlobalStatsHeader(
     stats: GlobalStats
 ) {
     val on = MaterialTheme.colorScheme.onSurface
-    val labelColor = on.copy(alpha = 0.70f)
+    val labelColor = on.copy(alpha = 0.90f)
     val hintColor = on.copy(alpha = 0.55f)
     val valueColor = on.copy(alpha = 0.95f)
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 18.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().height(120.dp),
+            modifier = Modifier.fillMaxWidth().height(75.dp).padding(horizontal = 12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.Top
         ) {
-            Column {
-                Box(
-                    modifier = Modifier
-                        .height(48.dp)
-                        .width(160.dp)
-                        .clip(CircleShape)
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.logo_new),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(135.dp)
-                            .align(Alignment.BottomCenter),
-                        contentScale = ContentScale.Inside
-                    )
-                }
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Text(
+                    text = "Recall",
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                Text(
+                    text = "Build smarter quizzes with AI",
+                    fontWeight = FontWeight.SemiBold,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = labelColor
+                )
             }
 
             Column(
@@ -73,11 +71,11 @@ fun GlobalStatsHeader(
             ) {
                 Text(
                     text = "Active streak",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = hintColor
+                    style = MaterialTheme.typography.labelMedium,
+                    color = labelColor
                 )
 
-                Spacer(Modifier.size(6.dp))
+                Spacer(Modifier.size(4.dp))
 
                 StatValueWithSuffix(
                     value = if (stats.streakDays == 0) "0" else stats.streakDays.toString(),
@@ -92,11 +90,11 @@ fun GlobalStatsHeader(
             ) {
                 Text(
                     text = "Effectiveness",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = hintColor
+                    style = MaterialTheme.typography.labelMedium,
+                    color = labelColor
                 )
 
-                Spacer(Modifier.size(6.dp))
+                Spacer(Modifier.size(4.dp))
                 StatValueWithSuffix(
                     value = formatScoreValue(stats.averageScore),
                     suffix = formatScoreSuffix(stats.averageScore),
@@ -105,6 +103,10 @@ fun GlobalStatsHeader(
                 )
             }
         }
+        HorizontalDivider(
+            modifier = Modifier.padding(top = 75.dp)
+                .background(hintColor)
+        )
 
     }
 }
@@ -179,7 +181,7 @@ private fun StatValueWithSuffix(
     ) {
         Text(
             text = value,
-            style = MaterialTheme.typography.displayMedium,
+            style = MaterialTheme.typography.displaySmall,
             color = valueColor,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.alignByBaseline()
@@ -187,7 +189,7 @@ private fun StatValueWithSuffix(
         if (!suffix.isNullOrBlank()) {
             Text(
                 text = suffix,
-                style = MaterialTheme.typography.labelLarge,
+                style = MaterialTheme.typography.labelMedium,
                 color = suffixColor,
                 modifier = Modifier
                     .padding(start = 4.dp)
