@@ -33,11 +33,7 @@ import kotlin.math.roundToInt
 
 @Composable
 fun GlobalStatsHeader(
-    stats: GlobalStats,
-    quizzesCount: Int,
-    modifier: Modifier = Modifier,
-    title: String = "Progress",
-    subtitle: String = "Keep practicing to maintain your streak"
+    stats: GlobalStats
 ) {
     val on = MaterialTheme.colorScheme.onSurface
     val labelColor = on.copy(alpha = 0.70f)
@@ -50,42 +46,35 @@ fun GlobalStatsHeader(
             .padding(horizontal = 18.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(20.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.fillMaxWidth().height(120.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.weight(1f)
-            ) {
+            Column {
                 Box(
                     modifier = Modifier
-                        .size(68.dp)
+                        .height(48.dp)
+                        .width(180.dp)
                         .clip(CircleShape)
                 ) {
                     Image(
-                        painter = painterResource(R.drawable.white_logo),
+                        painter = painterResource(R.drawable.logo_new),
                         contentDescription = null,
                         modifier = Modifier
-                            .size(58.dp)
-                            .align(Alignment.Center),
-                        contentScale = ContentScale.Crop
-                    )
-                }
-                Column(Modifier.padding(start = 4.dp)) {
-                    Text(
-                        text = "Recall",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = valueColor,
-                        fontWeight = FontWeight.SemiBold
+                            .size(90.dp)
+                            .padding(end = 8.dp)
+                            .align(Alignment.TopStart),
+                        contentScale = ContentScale.Inside
                     )
                 }
             }
 
-            Column(horizontalAlignment = Alignment.End) {
+            Column(
+                horizontalAlignment = Alignment.End,
+            ) {
+                Spacer(Modifier.size(10.dp))
                 Text(
                     text = "Active streak",
-                    style = MaterialTheme.typography.labelLarge,
+                    style = MaterialTheme.typography.labelMedium,
                     color = hintColor
                 )
 
@@ -102,9 +91,10 @@ fun GlobalStatsHeader(
             Column(
                 horizontalAlignment = Alignment.End
             ) {
+                Spacer(Modifier.size(10.dp))
                 Text(
                     text = "Effectiveness",
-                    style = MaterialTheme.typography.labelLarge,
+                    style = MaterialTheme.typography.labelMedium,
                     color = hintColor
                 )
 
@@ -191,7 +181,7 @@ private fun StatValueWithSuffix(
     ) {
         Text(
             text = value,
-            style = MaterialTheme.typography.displayMedium,
+            style = MaterialTheme.typography.displaySmall,
             color = valueColor,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.alignByBaseline()
@@ -199,10 +189,10 @@ private fun StatValueWithSuffix(
         if (!suffix.isNullOrBlank()) {
             Text(
                 text = suffix,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.labelMedium,
                 color = suffixColor,
                 modifier = Modifier
-                    .padding(start = 6.dp)
+                    .padding(start = 2.dp)
                     .alignByBaseline()
             )
         }
@@ -211,7 +201,7 @@ private fun StatValueWithSuffix(
 
 // formatShortRelativeTime moved above to return value/suffix
 
-@Preview(showBackground = true)
+@Preview(showBackground = false)
 @Composable
 private fun GlobalStatsHeaderPreview() {
     RecallTheme {
@@ -222,8 +212,7 @@ private fun GlobalStatsHeaderPreview() {
                     totalPractices = 1,
                     averageScore = 0.76f,
                     lastPracticedEpochMs = System.currentTimeMillis() - 0 * 60 * 60 * 1000
-                ),
-                quizzesCount = 6
+                )
             )
         }
     }

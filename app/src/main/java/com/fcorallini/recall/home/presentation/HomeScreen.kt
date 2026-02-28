@@ -12,15 +12,22 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -45,11 +52,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.compose.rememberNavController
 import com.fcorallini.recall.R
 import com.fcorallini.recall.core.domain.model.PdfSource
 import com.fcorallini.recall.core.domain.model.GlobalStats
-import com.fcorallini.recall.core.presentation.navigation.RecallNavGraph
 import com.fcorallini.recall.home.presentation.components.EmptyHomeContent
 import com.fcorallini.recall.home.presentation.components.GlobalStatsHeader
 import com.fcorallini.recall.home.presentation.components.PdfSourcesList
@@ -132,13 +137,29 @@ fun HomeContent(
                     Icon(Icons.Default.Add, contentDescription = null)
                 }
             }
+        },
+        bottomBar = {
+            NavigationBar {
+                NavigationBarItem(
+                    selected = true,
+                    onClick = {},
+                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
+                    label = { Text("Home") }
+                )
+                NavigationBarItem(
+                    selected = false,
+                    onClick = {},
+                    icon = { Icon(Icons.Default.List, contentDescription = "Quizzes") },
+                    label = { Text("Quizzes") }
+                )
+            }
         }
+
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(vertical = 12.dp)
         ) {
             when {
                 state.isLoading -> {
@@ -148,29 +169,15 @@ fun HomeContent(
                     EmptyHomeContent(onUploadPdfClick = onUploadPdfClick)
                 }
                 else -> {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize().padding(vertical = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(86.dp)
-                    ) {
-                        GlobalStatsHeader(
-                            stats = state.globalStats,
-                            quizzesCount = state.pdfSources.size,
-                            modifier = Modifier
-                        )
-                        PdfSourcesList(
-                            pdfSources = state.pdfSources,
-                            onSourceClick = onNavigateToQuiz,
-                            onSourceDelete = { source -> onDeleteSource(source.id) },
-                            onSourceRename = { source ->
-                                renameTarget = source
-                                renameText = source.displayName
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f)
-                        )
-                    }
+                    HomeMainContent(
+                        state = state,
+                        onNavigateToQuiz = onNavigateToQuiz,
+                        onDeleteSource = onDeleteSource,
+                        onRenameSource = { source ->
+                            renameTarget = source
+                            renameText = source.displayName
+                        }
+                    )
                 }
             }
         }
@@ -210,6 +217,45 @@ fun HomeContent(
         )
     }
 }
+ 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun HomeMainContent(
+    state: HomeState,
+    onNavigateToQuiz: (String) -> Unit,
+    onDeleteSource: (String) -> Unit,
+    onRenameSource: (PdfSource) -> Unit
+) {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ){
+            Image(
+                painter = painterResource(id = R.drawable.home),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize().offset(y = -(24).dp),
+                contentScale = ContentScale.Crop,
+            )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(86.dp)
+            ) {
+                GlobalStatsHeader(
+                    stats = state.globalStats
+                )
+                PdfSourcesList(
+                    pdfSources = state.pdfSources,
+                    onSourceClick = onNavigateToQuiz,
+                    onSourceDelete = { source -> onDeleteSource(source.id) },
+                    onSourceRename = { source -> onRenameSource(source) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                )
+            }
+        }
+    }
+
 
 @Composable
 private fun HomeLoadingContent() {
@@ -247,23 +293,9 @@ private fun HomeLoadingContent() {
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-private fun HomeLoadingPreview() {
-    RecallTheme {
-        Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.95f))) {
-            Image(
-                painter = painterResource(R.drawable.blue_back3),
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop,
-            )
-            HomeLoadingContent()
-        }
-    }
-}
 
-@Preview(showBackground = true, showSystemUi = true)
+
+@Preview(showBackground = true)
 @Composable
 private fun HomeStatsPreview() {
     RecallTheme {
@@ -280,7 +312,7 @@ private fun HomeStatsPreview() {
                         averageScore = 0.82f
                     ),
                     PdfSource(
-                        id = "1",
+                        id = "2",
                         displayName = "Exploring Data Visually.pdf",
                         uriString = "content://sample/1",
                         createdAtEpochMs = System.currentTimeMillis(),
@@ -306,7 +338,7 @@ private fun HomeStatsPreview() {
 }
 
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground = true)
 @Composable
 private fun HomeEmptyPreview() {
     RecallTheme {
