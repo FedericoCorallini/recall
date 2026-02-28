@@ -50,8 +50,10 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.fcorallini.recall.R
 import com.fcorallini.recall.core.domain.model.PdfSource
@@ -229,26 +231,59 @@ private fun HomeMainContent(
     val mostRecentSource = state.pdfSources.firstOrNull()
 
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().background(Color(0xFF242424))
     ){
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(86.dp)
+            verticalArrangement = Arrangement.spacedBy(32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
             GlobalStatsHeader(
                 stats = state.globalStats
             )
-            // Show only the most recent PDF source card
+
+            Text(
+                text = "Recommended for today",
+                style = MaterialTheme.typography.titleMedium,
+                fontSize = 20.sp,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.padding(top = 70.dp),
+                textAlign = TextAlign.Center
+            )
+
             mostRecentSource?.let { source ->
                 PdfSourceCard(
                     source = source,
                     onCardClick = { onNavigateToQuiz(source.id) },
                     onDeleteClick = { onDeleteSource(source.id) },
                     onRenameClick = { onRenameSource(source) },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp)
+                )
+            }
+
+            Column(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Keep your streak alive",
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        fontWeight = FontWeight.Medium
+                    ),
+                    fontSize = 20.sp,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+
+                Text(
+                    text = "Active recall builds long-term memory",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
