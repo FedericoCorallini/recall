@@ -49,7 +49,7 @@ fun EmptyHomeContent(onUploadPdfClick: () -> Unit) {
             Column(
                 modifier = Modifier
                     .background(
-                        Color.Black.copy(alpha = 0.15f),
+                        Color(0xFF1E1D22),
                         shape = RoundedCornerShape(topEnd = 24.dp, topStart = 24.dp)
                     )
                     .fillMaxWidth().height(450.dp)
