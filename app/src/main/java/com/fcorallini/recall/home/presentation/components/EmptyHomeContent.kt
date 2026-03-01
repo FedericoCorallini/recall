@@ -38,24 +38,18 @@ import com.fcorallini.recall.core.presentation.theme.RecallTheme
 fun EmptyHomeContent(onUploadPdfClick: () -> Unit) {
     Column(
         modifier = Modifier
+            .background(MaterialTheme.colorScheme.background)
             .fillMaxSize()
             .padding(horizontal = 28.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Brand lockup (logo + name)
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         )
         {
-            Image(
-                painter = painterResource(R.drawable.r_logo),
-                contentDescription = null,
-                modifier = Modifier.size(120.dp),
-                contentScale = ContentScale.Crop
-            )
             Column(modifier = Modifier.fillMaxWidth().padding(start = 18.dp)) {
                 Text(
                     text = "Recall",
@@ -93,22 +87,12 @@ fun EmptyHomeContent(onUploadPdfClick: () -> Unit) {
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground = true, showSystemUi = false)
 @Composable
 private fun EmptyHomePreview() {
     RecallTheme {
-        Box(
-            modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.95f))
-        ){
-            Image(
-                painter = painterResource(R.drawable.blue_back3),
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop,
-            )
-            EmptyHomeContent(
-                onUploadPdfClick = {}
-            )
-        }
+        EmptyHomeContent(
+            onUploadPdfClick = {}
+        )
     }
 }

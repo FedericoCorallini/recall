@@ -98,24 +98,34 @@ fun HomeScreen(
         }
     }
 
-    HomeContent(
-        state = state,
-        snackbarHostState = snackbarHostState,
-        onNavigateToQuiz = onNavigateToQuiz,
-        onNavigateToList = onNavigateToList,
-        onUploadPdfClick = { pdfPickerLauncher.launch(arrayOf("application/pdf")) },
-        onDeleteSource = { sourceId ->
-            viewModel.onEvent(HomeEvent.DeletePdfSource(sourceId))
-        },
-        onRenameSource = { sourceId, newDisplayName ->
-            viewModel.onEvent(
-                HomeEvent.RenamePdfSource(
-                    sourceId = sourceId,
-                    newDisplayName = newDisplayName
-                )
+    when {
+        state.isLoading -> {
+            HomeLoadingContent()
+        }
+        state.pdfSources.isEmpty() -> {
+            EmptyHomeContent(onUploadPdfClick = { pdfPickerLauncher.launch(arrayOf("application/pdf")) })
+        }
+        else -> {
+            HomeContent(
+                state = state,
+                snackbarHostState = snackbarHostState,
+                onNavigateToQuiz = onNavigateToQuiz,
+                onNavigateToList = onNavigateToList,
+                onUploadPdfClick = { pdfPickerLauncher.launch(arrayOf("application/pdf")) },
+                onDeleteSource = { sourceId ->
+                    viewModel.onEvent(HomeEvent.DeletePdfSource(sourceId))
+                },
+                onRenameSource = { sourceId, newDisplayName ->
+                    viewModel.onEvent(
+                        HomeEvent.RenamePdfSource(
+                            sourceId = sourceId,
+                            newDisplayName = newDisplayName
+                        )
+                    )
+                }
             )
         }
-    )
+    }
 }
  
 @Composable
@@ -132,7 +142,7 @@ fun HomeContent(
     var renameText by remember { mutableStateOf("") }
  
     Scaffold(
-        containerColor = Color.Transparent,
+        containerColor = MaterialTheme.colorScheme.background,
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
             NavigationBar {
@@ -163,25 +173,15 @@ fun HomeContent(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            when {
-                state.isLoading -> {
-                    HomeLoadingContent()
+            HomeMainContent(
+                state = state,
+                onNavigateToQuiz = onNavigateToQuiz,
+                onDeleteSource = onDeleteSource,
+                onRenameSource = { source ->
+                    renameTarget = source
+                    renameText = source.displayName
                 }
-                state.pdfSources.isEmpty() -> {
-                    EmptyHomeContent(onUploadPdfClick = onUploadPdfClick)
-                }
-                else -> {
-                    HomeMainContent(
-                        state = state,
-                        onNavigateToQuiz = onNavigateToQuiz,
-                        onDeleteSource = onDeleteSource,
-                        onRenameSource = { source ->
-                            renameTarget = source
-                            renameText = source.displayName
-                        }
-                    )
-                }
-            }
+            )
         }
     }
  
@@ -232,7 +232,9 @@ private fun HomeMainContent(
     val mostRecentSource = state.pdfSources.firstOrNull()
 
     Box(
-        modifier = Modifier.fillMaxSize().background(Color(0xFF1F2022))
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF1F2022))
     ){
         Column(
             modifier = Modifier
@@ -358,31 +360,6 @@ private fun HomeStatsPreview() {
                         averageScore = 0.82f
                     )
                 ),
-                globalStats = GlobalStats(
-                    streakDays = 4,
-                    totalPractices = 12,
-                    averageScore = 0.76f,
-                    lastPracticedEpochMs = System.currentTimeMillis() - 2 * 60 * 60 * 1000
-                )
-            ),
-            snackbarHostState = remember { SnackbarHostState() },
-            onNavigateToQuiz = {},
-            onNavigateToList = {},
-            onUploadPdfClick = {},
-            onDeleteSource = {},
-            onRenameSource = { _, _ -> }
-        )
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-private fun HomeEmptyPreview() {
-    RecallTheme {
-        HomeContent(
-            state = HomeState(
-                pdfSources = emptyList(),
                 globalStats = GlobalStats(
                     streakDays = 4,
                     totalPractices = 12,
