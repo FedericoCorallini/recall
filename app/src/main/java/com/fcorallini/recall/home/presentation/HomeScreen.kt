@@ -17,7 +17,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
@@ -37,15 +41,21 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.ContentScale
@@ -61,9 +71,10 @@ import com.fcorallini.recall.core.domain.model.PdfSource
 import com.fcorallini.recall.core.domain.model.GlobalStats
 import com.fcorallini.recall.home.presentation.components.CurvedNavigationBarWithFab
 import com.fcorallini.recall.home.presentation.components.EmptyHomeContent
-import com.fcorallini.recall.home.presentation.components.GlobalStatsHeader
+import com.fcorallini.recall.home.presentation.components.QuizPreviewBackground
 import com.fcorallini.recall.list.presentation.components.PdfSourceCard
 import com.fcorallini.recall.core.presentation.theme.RecallTheme
+import com.fcorallini.recall.home.presentation.components.GlobalStatsHeader
 
 @Composable
 fun HomeScreen(
@@ -100,7 +111,7 @@ fun HomeScreen(
 
     when {
         state.isLoading -> {
-            HomeLoadingContent()
+            HomeLoadingContent(progress = state.loadingProgress)
         }
         state.pdfSources.isEmpty() -> {
             EmptyHomeContent(onUploadPdfClick = { pdfPickerLauncher.launch(arrayOf("application/pdf")) })
@@ -297,42 +308,109 @@ private fun HomeMainContent(
 
 
 @Composable
-private fun HomeLoadingContent() {
+private fun HomeLoadingContent(
+    progress: Float
+) {
+    val animatedProgress by animateFloatAsState(
+        targetValue = progress,
+        animationSpec = tween(durationMillis = 300, easing = { it }),
+        label = "progress"
+    )
+
     Box(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier.padding(32.dp)
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 26.dp)
         ) {
-            Text(
-                text = "Analyzing your PDF...",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.secondary
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "We are generating your questions",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            Spacer(modifier = Modifier.height(32.dp))
-            CircularProgressIndicator(
-                modifier = Modifier.size(220.dp),
-                strokeWidth = 10.dp,
-                color = MaterialTheme.colorScheme.primary,
-                trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                strokeCap = StrokeCap.Round
+            QuizPreviewBackground()
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(1f - animatedProgress)
+                    .background(MaterialTheme.colorScheme.background)
+                    .align(Alignment.BottomCenter)
             )
         }
+
+        LoadingBottomPanel(
+            progress = animatedProgress,
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+        )
+    }
+}
+
+@Composable
+private fun LoadingBottomPanel(
+    progress: Float,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .background(Color(0xFF1E1D22), shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp))
+            .clip(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp, bottomStart = 20.dp, bottomEnd = 20.dp))
+            .padding(vertical = 22.dp)
+            .height(400.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        // Headline
+        Text(
+            text = "We are creating your quiz",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(Modifier.height(28.dp))
+
+        LinearProgressIndicator(
+            progress = { progress },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp)
+                .height(6.dp),
+            color = MaterialTheme.colorScheme.primary,
+            trackColor = MaterialTheme.colorScheme.surfaceVariant,
+        )
+
+        Spacer(Modifier.height(12.dp))
+
+        // Progress percentage text
+        Text(
+            text = "${(progress * 100).toInt()}%",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.primary,
+            fontWeight = FontWeight.Medium
+        )
+
+        Spacer(Modifier.height(16.dp))
+
+        Text(
+            text = "This could take a few seconds",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.60f)
+        )
     }
 }
 
 
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+private fun HomeLoadingContentPreview() {
+    RecallTheme {
+        HomeLoadingContent(progress = 0.6f)
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
