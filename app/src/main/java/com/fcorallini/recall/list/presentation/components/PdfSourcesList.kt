@@ -39,27 +39,28 @@ val cardColors = listOf(
 @Composable
 fun PdfSourcesList(
     pdfSources: List<PdfSource>,
-    onSourceClick: (String) -> Unit,
+    selectedSourceId: String?,
+    onSelectSource: (String?) -> Unit,
+    onStartPractice: (String) -> Unit,
     onSourceDelete: (PdfSource) -> Unit = {},
     onSourceRename: (PdfSource) -> Unit = {},
     modifier: Modifier = Modifier,
     overlap: Dp = 40.dp,
     cardHeight: Dp = 192.dp
 ) {
-    var selectedId by remember { mutableStateOf<String?>(null) }
     val listState = rememberLazyListState()
-    val selectedIndex = selectedId?.let { id ->
+    val selectedIndex = selectedSourceId?.let { id ->
         pdfSources.indexOfFirst { it.id == id }
     } ?: -1
     val hasSelection = selectedIndex >= 0
     val step = cardHeight - overlap
- 
+
     LaunchedEffect(selectedIndex) {
         if (selectedIndex >= 0) {
             listState.animateScrollToItem(0)
         }
     }
- 
+
     LazyColumn(
         state = listState,
         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
@@ -70,7 +71,7 @@ fun PdfSourcesList(
             items = pdfSources,
             key = { _, source -> source.id }
         ) { index, source ->
-            val isSelected = source.id == selectedId
+            val isSelected = source.id == selectedSourceId
             val targetOffset = when {
                 !hasSelection -> 0.dp
                 isSelected -> (-step * selectedIndex)
@@ -82,10 +83,12 @@ fun PdfSourcesList(
             PdfSourceCard(
                 source = source,
                 onCardClick = {
-                    selectedId = if (isSelected) null else source.id
+                    onSelectSource(if (isSelected) null else source.id)
                 },
                 onDeleteClick = { onSourceDelete(source) },
                 onRenameClick = { onSourceRename(source) },
+                onStartPractice = { onStartPractice(source.id) },
+                actionButton = ActionButton.EDIT,
                 cardColor = cardColors[index % cardColors.size],
                 modifier = Modifier
                     .fillMaxWidth()
@@ -142,7 +145,9 @@ private fun PdfSourcesListPreview() {
 
         PdfSourcesList(
             pdfSources = sampleSources,
-            onSourceClick = {}
+            selectedSourceId = null,
+            onSelectSource = {},
+            onStartPractice = {}
         )
     }
 }

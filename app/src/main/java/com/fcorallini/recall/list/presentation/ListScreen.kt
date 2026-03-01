@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -45,6 +46,7 @@ import com.fcorallini.recall.R
 import com.fcorallini.recall.core.domain.model.PdfSource
 import com.fcorallini.recall.core.presentation.theme.RecallTheme
 import com.fcorallini.recall.list.presentation.components.PdfSourcesList
+import com.fcorallini.recall.list.presentation.components.PracticeSessionsList
 
 @Composable
 fun ListScreen(
@@ -63,11 +65,18 @@ fun ListScreen(
         }
     }
 
+    LaunchedEffect(Unit) {
+        viewModel.onEvent(ListEvent.SelectSource(null))
+    }
+
     ListContent(
         state = state,
         snackbarHostState = snackbarHostState,
         onNavigateToQuiz = onNavigateToQuiz,
         onNavigateToHome = onNavigateToHome,
+        onSelectSource = { sourceId ->
+            viewModel.onEvent(ListEvent.SelectSource(sourceId))
+        },
         onDeleteSource = { sourceId ->
             viewModel.onEvent(ListEvent.DeletePdfSource(sourceId))
         },
@@ -89,6 +98,7 @@ fun ListContent(
     snackbarHostState: SnackbarHostState,
     onNavigateToQuiz: (String) -> Unit,
     onNavigateToHome: () -> Unit,
+    onSelectSource: (String?) -> Unit,
     onDeleteSource: (String) -> Unit,
     onRenameSource: (String, String) -> Unit
 ) {
@@ -110,7 +120,7 @@ fun ListContent(
                     selected = false,
                     onClick = { /* Add PDF from List - not primary action here */ },
                     icon = { Icon(Icons.Default.Add, contentDescription = "Add PDF") },
-                    label = { Text("Add") },
+                    label = { Text("Add PDF") },
                     enabled = false
                 )
                 NavigationBarItem(
@@ -156,16 +166,27 @@ fun ListContent(
                     )
                 }
                 
+                // Sources list with selection
                 PdfSourcesList(
                     pdfSources = state.pdfSources,
-                    onSourceClick = onNavigateToQuiz,
+                    selectedSourceId = state.selectedSourceId,
+                    onSelectSource = onSelectSource,
+                    onStartPractice = { sourceId -> onNavigateToQuiz(sourceId) },
                     onSourceDelete = { source -> onDeleteSource(source.id) },
                     onSourceRename = { source ->
                         renameTarget = source
                         renameText = source.displayName
                     },
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.weight(1f)
                 )
+
+                // Practice sessions for selected source (shown at bottom)
+                if (state.selectedSourceId != null) {
+                    PracticeSessionsList(
+                        sessions = state.practiceSessions,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
         }
     }
@@ -227,14 +248,42 @@ private fun ListContentPreview() {
                 practiceCount = 12,
                 lastPracticedEpochMs = System.currentTimeMillis() - 3 * 60 * 60 * 1000,
                 averageScore = 0.92f
+            ),
+            PdfSource(
+                id = "3",
+                displayName = "Kotlin Coroutines Guide.pdf",
+                uriString = "content://sample/1",
+                createdAtEpochMs = System.currentTimeMillis() - 2 * 24 * 60 * 60 * 1000,
+                practiceCount = 5,
+                lastPracticedEpochMs = System.currentTimeMillis() - 60 * 60 * 1000,
+                averageScore = 0.85f
+            ),
+            PdfSource(
+                id = "4",
+                displayName = "Clean Architecture Principles.pdf",
+                uriString = "content://sample/2",
+                createdAtEpochMs = System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000,
+                practiceCount = 12,
+                lastPracticedEpochMs = System.currentTimeMillis() - 3 * 60 * 60 * 1000,
+                averageScore = 0.92f
+            ),
+            PdfSource(
+                id = "5",
+                displayName = "Clean Architecture Principles.pdf",
+                uriString = "content://sample/2",
+                createdAtEpochMs = System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000,
+                practiceCount = 12,
+                lastPracticedEpochMs = System.currentTimeMillis() - 3 * 60 * 60 * 1000,
+                averageScore = 0.92f
             )
         )
 
         ListContent(
-            state = ListState(pdfSources = sampleSources),
+            state = ListState(pdfSources = sampleSources, selectedSourceId = "2", practiceSessions = listOf()),
             snackbarHostState = remember { SnackbarHostState() },
             onNavigateToQuiz = {},
             onNavigateToHome = {},
+            onSelectSource = {},
             onDeleteSource = {},
             onRenameSource = { _, _ -> }
         )

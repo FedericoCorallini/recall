@@ -11,10 +11,18 @@ import kotlinx.coroutines.flow.Flow
 interface PracticeSessionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(session: PracticeSessionEntity)
- 
+
     @Query("""
         SELECT * FROM practice_sessions
         ORDER BY completedAtEpochMs DESC
     """)
     fun observeAll(): Flow<List<PracticeSessionEntity>>
+
+    @Query("""
+        SELECT * FROM practice_sessions
+        WHERE sourceId = :sourceId
+        ORDER BY completedAtEpochMs DESC
+        LIMIT 10
+    """)
+    fun observeBySourceId(sourceId: String): Flow<List<PracticeSessionEntity>>
 }

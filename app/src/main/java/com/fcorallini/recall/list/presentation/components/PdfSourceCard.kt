@@ -130,17 +130,17 @@ fun PdfSourceCard(
                     label = if (source.practiceCount == 1) "Practice" else "Practices"
                 )
 
+                // Last Practiced
+                StatItem(
+                    value = source.lastPracticedEpochMs?.let { formatRelativeTimeShort(it) } ?: "Never",
+                    label = "Last"
+                )
+
                 // Average Score
                 val scorePercent = (source.averageScore * 100).toInt()
                 StatItem(
                     value = if (source.practiceCount > 0) "$scorePercent%" else "—",
                     label = "Avg Score"
-                )
-
-                // Last Practiced
-                StatItem(
-                    value = source.lastPracticedEpochMs?.let { formatRelativeTimeShort(it) } ?: "Never",
-                    label = "Last"
                 )
             }
 
