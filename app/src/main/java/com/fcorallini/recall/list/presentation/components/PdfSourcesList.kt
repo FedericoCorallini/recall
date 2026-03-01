@@ -93,7 +93,7 @@ fun PdfSourcesList(
                     onDeleteClick = { onSourceDelete(source) },
                     onRenameClick = { onSourceRename(source) },
                     onStartPractice = { onStartPractice(source.id) },
-                    isHomeCard = isSelected,
+                    isHomeCard = false,
                     actionButton = ActionButton.EDIT,
                     cardColor = cardColors[originalIndex % cardColors.size],
                     modifier = Modifier.fillMaxWidth()

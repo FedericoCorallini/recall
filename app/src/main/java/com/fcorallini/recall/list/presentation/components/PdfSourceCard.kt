@@ -45,7 +45,7 @@ fun PdfSourceCard(
     cardColor: Color = Color(0xFF5B8AD8),
     modifier: Modifier = Modifier
 ) {
-    val cardShape = RoundedCornerShape(28.dp)
+    val cardShape = RoundedCornerShape(24.dp)
     var cardExpandedState by remember { mutableStateOf(isHomeCard) }
 
     Card(
@@ -149,7 +149,6 @@ fun PdfSourceCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp)
-                        .clickable(onClick = onStartPractice)
                         .padding(top = 16.dp),
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
@@ -159,14 +158,15 @@ fun PdfSourceCard(
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold
                         ),
-                        color = Color.Black
+                        color = Color.Black,
+                        modifier = Modifier.clickable(onClick = onStartPractice)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                         contentDescription = "Start practice",
                         tint = Color.Black,
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(24.dp).clickable(onClick = onStartPractice)
                     )
                 }
             }
