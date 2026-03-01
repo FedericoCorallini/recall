@@ -34,6 +34,7 @@ val cardColors = listOf(
     Color(0xFF279696),
     Color(0xFFD65A5A),
     Color(0xFF55AD59),
+    Color(0xFF402C37),
 )
 
 @Composable
@@ -70,7 +71,7 @@ fun PdfSourcesList(
         state = listState,
         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(if (hasSelection) 0.dp else (-40).dp),
-        modifier = modifier.fillMaxWidth().background(Color(0xFF242424))
+        modifier = modifier.fillMaxWidth().background(Color(0xFF1F2022))
     ) {
         itemsIndexed(
             items = itemsToShow,

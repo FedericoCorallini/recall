@@ -232,7 +232,7 @@ private fun HomeMainContent(
     val mostRecentSource = state.pdfSources.firstOrNull()
 
     Box(
-        modifier = Modifier.fillMaxSize().background(Color(0xFF242424))
+        modifier = Modifier.fillMaxSize().background(Color(0xFF1F2022))
     ){
         Column(
             modifier = Modifier

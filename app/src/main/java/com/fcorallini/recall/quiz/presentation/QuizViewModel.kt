@@ -9,6 +9,7 @@ import com.fcorallini.recall.quiz.domain.usecase.ObserveQuestionsBySourceUseCase
 import com.fcorallini.recall.quiz.domain.usecase.SubmitAnswerUseCase
 import com.fcorallini.recall.quiz.domain.usecase.UpdatePdfSourceStatsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,7 +23,8 @@ sealed class QuizUiState {
         val currentIndex: Int,
         val totalQuestions: Int,
         val userAnswer: String = "",
-        val isSubmitting: Boolean = false
+        val isSubmitting: Boolean = false,
+        val isAnswerCorrect: Boolean? = null
     ) : QuizUiState()
     data class Summary(
         val correctCount: Int,
@@ -72,7 +74,8 @@ class QuizViewModel @Inject constructor(
                 currentIndex = currentQuestionIndex,
                 totalQuestions = questions.size,
                 userAnswer = "",
-                isSubmitting = false
+                isSubmitting = false,
+                isAnswerCorrect = null
             )
         } else {
             // Quiz completed - update PDF source stats
@@ -121,8 +124,16 @@ class QuizViewModel @Inject constructor(
                     )
                     if (isCorrect) {
                         correctAnswersCount++
+                        _uiState.value = currentState.copy(
+                            isAnswerCorrect = true
+                        )
                     }
-
+                    else{
+                        _uiState.value = currentState.copy(
+                            isAnswerCorrect = false
+                        )
+                    }
+                    delay(1000)
                     // Move to next question
                     currentQuestionIndex++
                     showCurrentQuestion()

@@ -1,6 +1,7 @@
 package com.fcorallini.recall.quiz.presentation.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,8 +32,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import com.fcorallini.recall.core.domain.model.Question
 import com.fcorallini.recall.core.domain.model.QuestionStats
 import com.fcorallini.recall.core.domain.model.QuestionType
@@ -90,20 +94,16 @@ fun QuizContent(
 
         // Question prompt
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface
-            ),
-            border = BorderStroke(
-                width = Dp.Hairline,
-                color = MaterialTheme.colorScheme.outline
             )
         ) {
             Text(
                 text = state.currentQuestion.prompt,
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.padding(20.dp)
+                textAlign = TextAlign.Center
             )
         }
 
@@ -115,7 +115,8 @@ fun QuizContent(
                 MultipleChoiceOptions(
                     options = state.currentQuestion.options,
                     selectedOption = state.userAnswer,
-                    onOptionSelected = onAnswerChange
+                    onOptionSelected = onAnswerChange,
+                    isAnswerCorrect = state.isAnswerCorrect
                 )
             }
             QuestionType.FLASHCARD -> {
@@ -138,8 +139,8 @@ fun QuizContent(
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
-                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.75f),
+                disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.75f)
             ),
             shape = MaterialTheme.shapes.medium
         ) {

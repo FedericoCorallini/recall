@@ -107,7 +107,7 @@ fun ListContent(
     var renameText by remember { mutableStateOf("") }
 
     Scaffold(
-        containerColor = Color(0xFF242424),
+        containerColor = Color(0xFF1F2022),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
             NavigationBar {

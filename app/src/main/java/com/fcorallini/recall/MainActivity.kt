@@ -8,6 +8,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.Modifier
@@ -27,7 +28,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             RecallTheme {
                 Box(Modifier.background(
-                    color = Color(0xFF242424)
+                    color = Color(0xFF1F2022)
                 )) {
                     val navController = rememberNavController()
                     RecallNavGraph(navController = navController)
