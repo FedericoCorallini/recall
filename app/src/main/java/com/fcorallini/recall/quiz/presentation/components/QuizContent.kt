@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -153,7 +154,7 @@ fun QuizContent(
                 disabledContainerColor = submitButtonContainerColor.copy(alpha = 0.75f),
                 disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.75f)
             ),
-            shape = MaterialTheme.shapes.medium
+            shape = RoundedCornerShape(24.dp)
         ) {
             Text("Confirm", style = MaterialTheme.typography.titleMedium)
         }

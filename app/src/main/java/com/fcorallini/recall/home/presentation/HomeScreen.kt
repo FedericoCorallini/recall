@@ -332,7 +332,7 @@ private fun HomeLoadingContent(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight(1f - animatedProgress)
+                    .fillMaxHeight(0.7f - animatedProgress)
                     .background(MaterialTheme.colorScheme.background)
                     .align(Alignment.BottomCenter)
             )
@@ -408,7 +408,7 @@ private fun LoadingBottomPanel(
 @Composable
 private fun HomeLoadingContentPreview() {
     RecallTheme {
-        HomeLoadingContent(progress = 0.6f)
+        HomeLoadingContent(progress = 0.3f)
     }
 }
 
