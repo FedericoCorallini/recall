@@ -96,7 +96,7 @@ class QuizViewModel @Inject constructor(
 
     fun updateUserAnswer(answer: String) {
         val currentState = _uiState.value
-        if (currentState is QuizUiState.Quiz) {
+        if (currentState is QuizUiState.Quiz && !currentState.isSubmitting) {
             _uiState.value = currentState.copy(userAnswer = answer)
         }
     }
@@ -125,12 +125,14 @@ class QuizViewModel @Inject constructor(
                     if (isCorrect) {
                         correctAnswersCount++
                         _uiState.value = currentState.copy(
-                            isAnswerCorrect = true
+                            isAnswerCorrect = true,
+                            isSubmitting = true
                         )
                     }
                     else{
                         _uiState.value = currentState.copy(
-                            isAnswerCorrect = false
+                            isAnswerCorrect = false,
+                            isSubmitting = true
                         )
                     }
                     delay(1000)

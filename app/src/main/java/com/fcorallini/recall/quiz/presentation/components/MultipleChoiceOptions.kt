@@ -1,6 +1,7 @@
 package com.fcorallini.recall.quiz.presentation.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,7 +29,8 @@ fun MultipleChoiceOptions(
     options: List<String>,
     selectedOption: String,
     isAnswerCorrect: Boolean? = null,
-    onOptionSelected: (String) -> Unit
+    onOptionSelected: (String) -> Unit,
+    enable: Boolean = true
 ) {
     Column {
         options.forEach { option ->
@@ -39,8 +41,9 @@ fun MultipleChoiceOptions(
                     .padding(vertical = 6.dp)
                     .selectable(
                         selected = isSelected,
-                        onClick = { onOptionSelected(option) },
-                        role = Role.RadioButton
+                        onClick = { if (enable) onOptionSelected(option) },
+                        role = Role.RadioButton,
+                        enabled = enable
                     ),
                 colors = CardDefaults.cardColors(
                     containerColor = when {
