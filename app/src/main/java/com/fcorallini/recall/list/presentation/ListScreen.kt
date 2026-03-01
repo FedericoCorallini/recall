@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.fcorallini.recall.R
 import com.fcorallini.recall.core.domain.model.PdfSource
+import com.fcorallini.recall.core.domain.model.PracticeSession
 import com.fcorallini.recall.core.presentation.theme.RecallTheme
 import com.fcorallini.recall.list.presentation.components.PdfSourcesList
 import com.fcorallini.recall.list.presentation.components.PracticeSessionsList
@@ -177,16 +178,10 @@ fun ListContent(
                         renameTarget = source
                         renameText = source.displayName
                     },
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    practiceSessions = state.practiceSessions
                 )
 
-                // Practice sessions for selected source (shown at bottom)
-                if (state.selectedSourceId != null) {
-                    PracticeSessionsList(
-                        sessions = state.practiceSessions,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
             }
         }
     }
@@ -275,6 +270,57 @@ private fun ListContentPreview() {
                 practiceCount = 12,
                 lastPracticedEpochMs = System.currentTimeMillis() - 3 * 60 * 60 * 1000,
                 averageScore = 0.92f
+            )
+        )
+
+        val sampleSessions = listOf(
+            PracticeSession(
+                id = 1,
+                sourceId = "2",
+                completedAtEpochMs = System.currentTimeMillis() - 2 * 60 * 60 * 1000,
+                score = 0.85f,
+                correctCount = 17,
+                totalCount = 20
+            ),
+            PracticeSession(
+                id = 2,
+                sourceId = "2",
+                completedAtEpochMs = System.currentTimeMillis() - 24 * 60 * 60 * 1000,
+                score = 0.72f,
+                correctCount = 18,
+                totalCount = 25
+            ),
+            PracticeSession(
+                id = 3,
+                sourceId = "2",
+                completedAtEpochMs = System.currentTimeMillis() - 3 * 24 * 60 * 60 * 1000,
+                score = 0.45f,
+                correctCount = 9,
+                totalCount = 20
+            ),
+            PracticeSession(
+                id = 1,
+                sourceId = "2",
+                completedAtEpochMs = System.currentTimeMillis() - 2 * 60 * 60 * 1000,
+                score = 0.85f,
+                correctCount = 17,
+                totalCount = 20
+            ),
+            PracticeSession(
+                id = 2,
+                sourceId = "2",
+                completedAtEpochMs = System.currentTimeMillis() - 24 * 60 * 60 * 1000,
+                score = 0.72f,
+                correctCount = 18,
+                totalCount = 25
+            ),
+            PracticeSession(
+                id = 3,
+                sourceId = "2",
+                completedAtEpochMs = System.currentTimeMillis() - 3 * 24 * 60 * 60 * 1000,
+                score = 0.45f,
+                correctCount = 9,
+                totalCount = 20
             )
         )
 

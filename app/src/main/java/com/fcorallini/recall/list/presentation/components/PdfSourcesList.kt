@@ -4,26 +4,26 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.fcorallini.recall.core.domain.model.PdfSource
+import com.fcorallini.recall.core.domain.model.PracticeSession
 import com.fcorallini.recall.core.presentation.theme.RecallTheme
 
 val cardColors = listOf(
@@ -40,62 +40,76 @@ val cardColors = listOf(
 fun PdfSourcesList(
     pdfSources: List<PdfSource>,
     selectedSourceId: String?,
+    practiceSessions: List<PracticeSession>,
     onSelectSource: (String?) -> Unit,
     onStartPractice: (String) -> Unit,
     onSourceDelete: (PdfSource) -> Unit = {},
     onSourceRename: (PdfSource) -> Unit = {},
-    modifier: Modifier = Modifier,
-    overlap: Dp = 40.dp,
-    cardHeight: Dp = 192.dp
+    modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
-    val selectedIndex = selectedSourceId?.let { id ->
-        pdfSources.indexOfFirst { it.id == id }
-    } ?: -1
-    val hasSelection = selectedIndex >= 0
-    val step = cardHeight - overlap
+    val hasSelection = selectedSourceId != null
 
-    LaunchedEffect(selectedIndex) {
-        if (selectedIndex >= 0) {
+    // Cuando hay selección, solo mostrar ese item. Si no, mostrar todos.
+    val itemsToShow = if (hasSelection) {
+        pdfSources.filter { it.id == selectedSourceId }
+    } else {
+        pdfSources
+    }
+
+    val selectedIndex = if (hasSelection) {
+        pdfSources.indexOfFirst { it.id == selectedSourceId }
+    } else -1
+
+    LaunchedEffect(selectedSourceId) {
             listState.animateScrollToItem(0)
-        }
+
     }
 
     LazyColumn(
         state = listState,
         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(-overlap),
+        verticalArrangement = Arrangement.spacedBy(if (hasSelection) 0.dp else (-40).dp),
         modifier = modifier.fillMaxWidth().background(Color(0xFF242424))
     ) {
         itemsIndexed(
-            items = pdfSources,
+            items = itemsToShow,
             key = { _, source -> source.id }
         ) { index, source ->
             val isSelected = source.id == selectedSourceId
-            val targetOffset = when {
-                !hasSelection -> 0.dp
-                isSelected -> (-step * selectedIndex)
-                else -> 0.dp
-            }
-            val animatedOffset by animateDpAsState(targetValue = targetOffset, label = "cardOffset")
-            val targetAlpha = if (hasSelection && !isSelected) 0f else 1f
-            val animatedAlpha by animateFloatAsState(targetValue = targetAlpha, label = "cardAlpha")
-            PdfSourceCard(
-                source = source,
-                onCardClick = {
-                    onSelectSource(if (isSelected) null else source.id)
-                },
-                onDeleteClick = { onSourceDelete(source) },
-                onRenameClick = { onSourceRename(source) },
-                onStartPractice = { onStartPractice(source.id) },
-                actionButton = ActionButton.EDIT,
-                cardColor = cardColors[index % cardColors.size],
+            val originalIndex = pdfSources.indexOfFirst { it.id == source.id }
+
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .offset(y = animatedOffset)
-                    .alpha(animatedAlpha)
                     .zIndex(if (isSelected) 1f else 0f)
-            )
+                    .padding(bottom = if (isSelected) 16.dp else 0.dp)
+            ) {
+                PdfSourceCard(
+                    source = source,
+                    onCardClick = {
+                        onSelectSource(if (isSelected) null else source.id)
+                    },
+                    onDeleteClick = { onSourceDelete(source) },
+                    onRenameClick = { onSourceRename(source) },
+                    onStartPractice = { onStartPractice(source.id) },
+                    isHomeCard = isSelected,
+                    actionButton = ActionButton.EDIT,
+                    cardColor = cardColors[originalIndex % cardColors.size],
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                // Practice sessions debajo de la card seleccionada
+                if (isSelected && practiceSessions.isNotEmpty()) {
+                    PracticeSessionsList(
+                        sessions = practiceSessions,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp)
+                            .heightIn(max = 250.dp)
+                    )
+                }
+            }
         }
     }
 }
@@ -143,9 +157,29 @@ private fun PdfSourcesListPreview() {
             )
         )
 
+        val sampleSessions = listOf(
+            PracticeSession(
+                id = 1,
+                sourceId = "2",
+                completedAtEpochMs = System.currentTimeMillis() - 2 * 60 * 60 * 1000,
+                score = 0.85f,
+                correctCount = 17,
+                totalCount = 20
+            ),
+            PracticeSession(
+                id = 2,
+                sourceId = "2",
+                completedAtEpochMs = System.currentTimeMillis() - 24 * 60 * 60 * 1000,
+                score = 0.72f,
+                correctCount = 18,
+                totalCount = 25
+            )
+        )
+
         PdfSourcesList(
             pdfSources = sampleSources,
-            selectedSourceId = null,
+            selectedSourceId = "2",
+            practiceSessions = sampleSessions,
             onSelectSource = {},
             onStartPractice = {}
         )
