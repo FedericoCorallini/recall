@@ -15,9 +15,15 @@ class PracticeSessionRepositoryImpl @Inject constructor(
     override suspend fun insert(session: PracticeSession) {
         practiceSessionDao.insert(session.toEntity())
     }
- 
+
     override fun observeAll(): Flow<List<PracticeSession>> {
         return practiceSessionDao.observeAll().map { sessions ->
+            sessions.map { it.toDomain() }
+        }
+    }
+
+    override fun observeBySourceId(sourceId: String): Flow<List<PracticeSession>> {
+        return practiceSessionDao.observeBySourceId(sourceId).map { sessions ->
             sessions.map { it.toDomain() }
         }
     }
