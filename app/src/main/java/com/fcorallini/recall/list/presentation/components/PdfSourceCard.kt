@@ -65,7 +65,7 @@ fun PdfSourceCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 20.dp, bottom = if (cardExpandedState) 20.dp else 44.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             // Top row: Title and action icons
             Row(
