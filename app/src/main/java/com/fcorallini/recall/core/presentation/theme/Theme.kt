@@ -3,9 +3,10 @@ package com.fcorallini.recall.core.presentation.theme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.ui.graphics.Color
 
 private val RecallColorScheme = darkColorScheme(
-    primary = RecallIndigo,
+    primary = RecallBluePrimary,
     secondary = RecallBlueSecondary,
     tertiary = RecallBluePrimary,
     background = RecallBackground,

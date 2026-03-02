@@ -1,6 +1,7 @@
 package com.fcorallini.recall.quiz.presentation.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,9 +9,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -30,9 +33,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import com.fcorallini.recall.core.domain.model.Question
 import com.fcorallini.recall.core.domain.model.QuestionStats
 import com.fcorallini.recall.core.domain.model.QuestionType
@@ -58,30 +65,35 @@ fun QuizContent(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            IconButton(
+                onClick = onClose,
+                modifier = Modifier.width(40.dp).offset(x = -(10).dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Close quiz",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
             Text(
                 text = "${state.currentIndex + 1}/${state.totalQuestions}",
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.SemiBold
             )
-            IconButton(
-                onClick = onClose,
-                modifier = Modifier.width(40.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = "Close quiz",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
         }
         Spacer(modifier = Modifier.height(8.dp))
+        val progressIndicatorColor = when (state.isAnswerCorrect) {
+            true -> Color(0xFF55AD59)
+            false -> Color(0xFFD65A5A)
+            else -> MaterialTheme.colorScheme.primary
+        }
         LinearProgressIndicator(
             progress = { (state.currentIndex + 1).toFloat() / state.totalQuestions.toFloat() },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(6.dp),
-            color = MaterialTheme.colorScheme.primary,
+            color = progressIndicatorColor,
             trackColor = MaterialTheme.colorScheme.surfaceVariant,
             strokeCap = StrokeCap.Round
         )
@@ -90,20 +102,16 @@ fun QuizContent(
 
         // Question prompt
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface
-            ),
-            border = BorderStroke(
-                width = Dp.Hairline,
-                color = MaterialTheme.colorScheme.outline
             )
         ) {
             Text(
                 text = state.currentQuestion.prompt,
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.padding(20.dp)
+                textAlign = TextAlign.Center
             )
         }
 
@@ -115,7 +123,9 @@ fun QuizContent(
                 MultipleChoiceOptions(
                     options = state.currentQuestion.options,
                     selectedOption = state.userAnswer,
-                    onOptionSelected = onAnswerChange
+                    onOptionSelected = onAnswerChange,
+                    isAnswerCorrect = state.isAnswerCorrect,
+                    enable = !state.isSubmitting
                 )
             }
             QuestionType.FLASHCARD -> {
@@ -129,6 +139,11 @@ fun QuizContent(
         Spacer(modifier = Modifier.weight(1f))
 
         // Submit button
+        val submitButtonContainerColor = when (state.isAnswerCorrect) {
+            true -> Color(0xFF55AD59)
+            false -> Color(0xFFD65A5A)
+            else -> MaterialTheme.colorScheme.primary
+        }
         Button(
             onClick = onSubmit,
             modifier = Modifier
@@ -136,22 +151,14 @@ fun QuizContent(
                 .height(48.dp),
             enabled = state.userAnswer.isNotBlank() && !state.isSubmitting,
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
+                containerColor = submitButtonContainerColor,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
-                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                disabledContainerColor = submitButtonContainerColor.copy(alpha = 0.75f),
+                disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.75f)
             ),
-            shape = MaterialTheme.shapes.medium
+            shape = RoundedCornerShape(24.dp)
         ) {
-            if (state.isSubmitting) {
-                CircularProgressIndicator(
-                    modifier = Modifier.padding(4.dp),
-                    strokeWidth = 2.dp,
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-            } else {
-                Text("Confirm", style = MaterialTheme.typography.titleMedium)
-            }
+            Text("Confirm", style = MaterialTheme.typography.titleMedium)
         }
     }
 }
@@ -264,6 +271,96 @@ private fun QuizContentSubmittingPreview() {
             totalQuestions = 6,
             userAnswer = "200 OK",
             isSubmitting = true
+        )
+
+        Scaffold { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                QuizContent(
+                    state = state,
+                    onAnswerChange = {},
+                    onSubmit = {},
+                    onClose = {}
+                )
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+private fun QuizContentCorrectPreview() {
+    RecallTheme {
+        val sampleQuestion = Question(
+            id = "4",
+            sourceId = "source1",
+            type = QuestionType.MULTIPLE_CHOICE,
+            prompt = "What does the 'suspend' keyword indicate in Kotlin?",
+            options = listOf(
+                "A function that can be paused and resumed",
+                "A function that runs forever",
+                "A static function",
+                "A deprecated function"
+            ),
+            answer = "A function that can be paused and resumed",
+            stats = QuestionStats()
+        )
+
+        val state = QuizUiState.Quiz(
+            currentQuestion = sampleQuestion,
+            currentIndex = 2,
+            totalQuestions = 6,
+            userAnswer = "A function that can be paused and resumed",
+            isSubmitting = true,
+            isAnswerCorrect = true
+        )
+
+        Scaffold { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                QuizContent(
+                    state = state,
+                    onAnswerChange = {},
+                    onSubmit = {},
+                    onClose = {}
+                )
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+private fun QuizContentIncorrectPreview() {
+    RecallTheme {
+        val sampleQuestion = Question(
+            id = "5",
+            sourceId = "source1",
+            type = QuestionType.MULTIPLE_CHOICE,
+            prompt = "Which collection type in Kotlin maintains insertion order?",
+            options = listOf(
+                "Set",
+                "List",
+                "Map",
+                "Array"
+            ),
+            answer = "List",
+            stats = QuestionStats()
+        )
+
+        val state = QuizUiState.Quiz(
+            currentQuestion = sampleQuestion,
+            currentIndex = 3,
+            totalQuestions = 6,
+            userAnswer = "Set",
+            isSubmitting = true,
+            isAnswerCorrect = false
         )
 
         Scaffold { paddingValues ->

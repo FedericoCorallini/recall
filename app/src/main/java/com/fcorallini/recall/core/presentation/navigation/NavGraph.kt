@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.fcorallini.recall.home.presentation.HomeScreen
+import com.fcorallini.recall.list.presentation.ListScreen
 import com.fcorallini.recall.quiz.presentation.QuizScreen
 
 @Composable
@@ -21,6 +22,22 @@ fun RecallNavGraph(
             HomeScreen(
                 onNavigateToQuiz = { sourceId ->
                     navController.navigate(Route.Quiz.createRoute(sourceId))
+                },
+                onNavigateToList = {
+                    navController.navigate(Route.List.path)
+                }
+            )
+        }
+
+        composable(Route.List.path) {
+            ListScreen(
+                onNavigateToQuiz = { sourceId ->
+                    navController.navigate(Route.Quiz.createRoute(sourceId))
+                },
+                onNavigateToHome = {
+                    navController.navigate(Route.Home.path) {
+                        popUpTo(Route.Home.path) { inclusive = true }
+                    }
                 }
             )
         }
