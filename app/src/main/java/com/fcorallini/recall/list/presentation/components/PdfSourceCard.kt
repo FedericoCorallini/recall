@@ -26,6 +26,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.fcorallini.recall.core.domain.model.PdfSource
 import com.fcorallini.recall.core.presentation.theme.RecallTheme
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 
 enum class ActionButton {
     EDIT,
@@ -43,16 +46,141 @@ fun PdfSourceCard(
     isHomeCard: Boolean = false,
     actionButton: ActionButton = ActionButton.EDIT,
     cardColor: Color = Color(0xFF5B8AD8),
+    enableSwipeToDelete: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     val cardShape = RoundedCornerShape(24.dp)
     var cardExpandedState by remember { mutableStateOf(isHomeCard) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
-    Card(
-        onClick = {
-            onCardClick()
-            if(!isHomeCard) cardExpandedState = !cardExpandedState
+    val swipeState = rememberSwipeToDismissBoxState(
+        initialValue = SwipeToDismissBoxValue.Settled,
+        confirmValueChange = { value ->
+            if (value == SwipeToDismissBoxValue.EndToStart) {
+                showDeleteDialog = true
+                false // Don't dismiss the card, show dialog instead
+            } else {
+                false
+            }
+        }
+    )
+
+    // Delete confirmation dialog
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Delete PDF") },
+            text = { Text("Are you sure you want to delete \"${source.displayName}\"?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onDeleteClick()
+                        showDeleteDialog = false
+                    },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text("Delete")
+                }
             },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+
+    if (enableSwipeToDelete && !isHomeCard) {
+        SwipeToDismissBox(
+            state = swipeState,
+            backgroundContent = {
+                SwipeDeleteBackground(swipeDismissState = swipeState)
+            },
+            modifier = modifier.fillMaxWidth()
+        ) {
+            PdfSourceCardContent(
+                source = source,
+                cardExpandedState = cardExpandedState,
+                onCardClick = {
+                    onCardClick()
+                    if (!isHomeCard) cardExpandedState = !cardExpandedState
+                },
+                onRenameClick = onRenameClick,
+                onStartPractice = onStartPractice,
+                cardShape = cardShape,
+                cardColor = cardColor,
+                actionButton = actionButton,
+                isHomeCard = isHomeCard,
+                onToggleExpand = { if (!isHomeCard) cardExpandedState = !cardExpandedState }
+            )
+        }
+    } else {
+        PdfSourceCardContent(
+            source = source,
+            cardExpandedState = cardExpandedState,
+            onCardClick = {
+                onCardClick()
+                if (!isHomeCard) cardExpandedState = !cardExpandedState
+            },
+            onRenameClick = onRenameClick,
+            onStartPractice = onStartPractice,
+            cardShape = cardShape,
+            cardColor = cardColor,
+            actionButton = actionButton,
+            isHomeCard = isHomeCard,
+            modifier = modifier.fillMaxWidth(),
+            onToggleExpand = { if (!isHomeCard) cardExpandedState = !cardExpandedState }
+        )
+    }
+}
+
+@Composable
+private fun SwipeDeleteBackground(
+    swipeDismissState: SwipeToDismissBoxState
+) {
+    val color = when (swipeDismissState.dismissDirection) {
+        SwipeToDismissBoxValue.EndToStart -> Color.Transparent
+        else -> Color.Transparent
+    }
+
+    val alignment = Alignment.CenterEnd
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color, RoundedCornerShape(24.dp))
+            .padding(horizontal = 20.dp),
+        contentAlignment = alignment
+    ) {
+        if (swipeDismissState.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
+            Icon(
+                imageVector = Icons.Default.Delete,
+                contentDescription = "Delete",
+                tint = Color(0xFFD65A5A),
+                modifier = Modifier.size(32.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun PdfSourceCardContent(
+    source: PdfSource,
+    cardExpandedState: Boolean,
+    onCardClick: () -> Unit,
+    onRenameClick: () -> Unit,
+    onStartPractice: () -> Unit,
+    cardShape: RoundedCornerShape,
+    cardColor: Color,
+    actionButton: ActionButton,
+    isHomeCard: Boolean,
+    onToggleExpand: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        onClick = onCardClick,
         modifier = modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = cardShape,
@@ -98,7 +226,7 @@ fun PdfSourceCard(
                         }
                     }
                     ActionButton.DELETE -> {
-                        IconButton(onClick = onDeleteClick) {
+                        IconButton(onClick = { /* Handled by swipe */ }) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
                                 contentDescription = "Delete source",

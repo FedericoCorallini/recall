@@ -1,16 +1,19 @@
 package com.fcorallini.recall.home.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -53,7 +56,7 @@ fun EmptyHomeContent(onUploadPdfClick: () -> Unit) {
         QuizPreviewBackground(
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .padding(top = 26.dp),
+                .padding(top = 36.dp),
         )
 
         EmptyHomeBottomPanel(
@@ -61,6 +64,7 @@ fun EmptyHomeContent(onUploadPdfClick: () -> Unit) {
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
+                .padding(bottom = 45.dp)
         )
     }
 }
@@ -73,12 +77,13 @@ private fun EmptyHomeBottomPanel(
 
     Column(
         modifier = modifier
-            .background(Color(0xFF1E1D22), shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp))
+            .background(Color(0xFF1E1D22).copy(alpha = 0.6f), shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp))
             .clip(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp, bottomStart = 20.dp, bottomEnd = 20.dp))
             .padding(vertical = 22.dp)
-            .height(400.dp),
+            .fillMaxHeight(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Spacer(Modifier.weight(1f))
         // Headline
         Text(
             text = "Wellcome to Recall",
