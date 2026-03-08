@@ -1,7 +1,6 @@
 package com.fcorallini.recall.home.presentation.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,20 +12,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.Quiz
-import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Insights
-import androidx.compose.material.icons.filled.MenuBook
-import androidx.compose.material.icons.filled.School
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.UploadFile
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -37,7 +27,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -84,68 +73,73 @@ private fun EmptyHomeBottomPanel(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(Modifier.weight(1f))
-        // Headline
-        Text(
-            text = "Wellcome to Recall",
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface,
-            textAlign = TextAlign.Center
-        )
 
-        Spacer(Modifier.height(8.dp))
-
-        // Subheadline
-        Text(
-            text = "Upload a PDF and we’ll turn it into\ninteractive quizzes",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.72f),
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(Modifier.height(28.dp))
-
-        // Beneficios (3 bullets)
         Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            BenefitRow(
-                icon = Icons.Default.AutoAwesome,
-                title = "AI-generated questions",
-                subtitle = "Based on your PDF content"
-            )
-            BenefitRow(
-                icon = Icons.Default.Insights,
-                title = "Smart practice sessions",
-                subtitle = "Focus on what you miss"
-            )
-            BenefitRow(
-                icon = Icons.Default.Description,
-                title = "Everything stays organized",
-                subtitle = "One quiz per document"
-            )
-        }
-
-        Spacer(Modifier.height(30.dp))
-
-        Button(
-            onClick = onUploadPdfClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(60.dp)
-                .padding(horizontal = 16.dp),
-            shape = RoundedCornerShape(999.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f), // o tu primary pero probado contra fondo oscuro
-                contentColor = Color.White
-            )
+            modifier = Modifier.background(Color(0xFF1E1D22)),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Start Your First Quiz",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
+                text = "Welcome to Recall",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center
             )
+
+            Spacer(Modifier.height(8.dp))
+
+            // Subheadline
+            Text(
+                text = "Upload a PDF and we’ll turn it into\ninteractive quizzes",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.72f),
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(Modifier.height(28.dp))
+
+            // Beneficios (3 bullets)
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                BenefitRow(
+                    icon = Icons.Default.AutoAwesome,
+                    title = "AI-generated questions",
+                    subtitle = "Based on your PDF content"
+                )
+                BenefitRow(
+                    icon = Icons.Default.Insights,
+                    title = "Smart practice sessions",
+                    subtitle = "Focus on what you miss"
+                )
+                BenefitRow(
+                    icon = Icons.Default.Description,
+                    title = "Everything stays organized",
+                    subtitle = "One quiz per document"
+                )
+            }
+
+            Spacer(Modifier.height(30.dp))
+
+            Button(
+                onClick = onUploadPdfClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp)
+                    .padding(horizontal = 16.dp),
+                shape = RoundedCornerShape(999.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f), // o tu primary pero probado contra fondo oscuro
+                    contentColor = Color.White
+                )
+            ) {
+                Text(
+                    text = "Start Your First Quiz",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
         }
     }
 }

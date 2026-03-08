@@ -64,7 +64,7 @@ fun QuizPreviewBackground(modifier: Modifier = Modifier) {
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Text(
-                    text = "What is the primary purpose of Kotlin coroutines?",
+                    text = "Which band released the album Abbey Road in 1969?",
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center,
@@ -73,10 +73,10 @@ fun QuizPreviewBackground(modifier: Modifier = Modifier) {
             }
 
             // Options
-            FakeQuizOption(text = "To simplify asynchronous programming", isSelected = false)
-            FakeQuizOption(text = "To replace the JVM", isSelected = true)
-            FakeQuizOption(text = "To compile code faster", isSelected = false)
-            FakeQuizOption(text = "To manage memory allocation", isSelected = false)
+            FakeQuizOption(text = "The Rolling Stones", isSelected = false)
+            FakeQuizOption(text = "The Beatles", isSelected = true)
+            FakeQuizOption(text = "Pink Floyd", isSelected = false)
+            FakeQuizOption(text = "Led Zeppelin", isSelected = false)
         }
     }
 }

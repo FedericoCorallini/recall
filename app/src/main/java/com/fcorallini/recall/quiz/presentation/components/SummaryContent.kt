@@ -161,7 +161,7 @@ fun SummaryContent(
 private fun SummaryContentPreview() {
     RecallTheme {
         val state = QuizUiState.Summary(
-            correctCount = 9,
+            correctCount = 90,
             totalCount = 10
         )
 
