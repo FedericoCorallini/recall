@@ -122,6 +122,7 @@ fun QuizContent(
             QuestionType.MULTIPLE_CHOICE -> {
                 MultipleChoiceOptions(
                     options = state.currentQuestion.options,
+                    correctOption = state.currentQuestion.answer,
                     selectedOption = state.userAnswer,
                     onOptionSelected = onAnswerChange,
                     isAnswerCorrect = state.isAnswerCorrect,

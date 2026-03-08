@@ -24,7 +24,7 @@ sealed class QuizUiState {
         val totalQuestions: Int,
         val userAnswer: String = "",
         val isSubmitting: Boolean = false,
-        val isAnswerCorrect: Boolean? = null
+        val isAnswerCorrect: Boolean? = null,
     ) : QuizUiState()
     data class Summary(
         val correctCount: Int,
@@ -135,7 +135,7 @@ class QuizViewModel @Inject constructor(
                             isSubmitting = true
                         )
                     }
-                    delay(1000)
+                    delay(1500)
                     // Move to next question
                     currentQuestionIndex++
                     showCurrentQuestion()

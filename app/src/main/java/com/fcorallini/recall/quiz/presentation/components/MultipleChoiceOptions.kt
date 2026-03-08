@@ -28,6 +28,7 @@ import com.fcorallini.recall.core.presentation.theme.RecallTheme
 fun MultipleChoiceOptions(
     options: List<String>,
     selectedOption: String,
+    correctOption: String,
     isAnswerCorrect: Boolean? = null,
     onOptionSelected: (String) -> Unit,
     enable: Boolean = true
@@ -35,6 +36,7 @@ fun MultipleChoiceOptions(
     Column {
         options.forEach { option ->
             val isSelected = option == selectedOption
+            val displayAsCorrect = !isSelected && option.equals(correctOption, ignoreCase = true)
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -50,6 +52,7 @@ fun MultipleChoiceOptions(
                         isSelected && isAnswerCorrect == true -> Color(0xFF55AD59).copy(alpha = 0.15f)
                         isSelected && isAnswerCorrect == false -> Color(0xFFD65A5A).copy(alpha = 0.15f)
                         isSelected -> MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                        displayAsCorrect && isAnswerCorrect != null -> Color(0xFF55AD59).copy(alpha = 0.10f)
                         else -> MaterialTheme.colorScheme.surface
                     }
                 ),
@@ -59,6 +62,7 @@ fun MultipleChoiceOptions(
                         isSelected && isAnswerCorrect == true -> Color(0xFF55AD59).copy(alpha = 0.45f)
                         isSelected && isAnswerCorrect == false -> Color(0xFFD65A5A).copy(alpha = 0.45f)
                         isSelected -> MaterialTheme.colorScheme.primary
+                        displayAsCorrect && isAnswerCorrect != null -> Color(0xFF55AD59).copy(alpha = 0.10f)
                         else -> MaterialTheme.colorScheme.outline
                     }
                 )
@@ -80,7 +84,10 @@ fun MultipleChoiceOptions(
                                 isSelected -> MaterialTheme.colorScheme.primary
                                 else -> MaterialTheme.colorScheme.primary
                             },
-                            unselectedColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                            unselectedColor = when{
+                                displayAsCorrect && isAnswerCorrect != null -> Color(0xFF55AD59).copy(alpha = 0.10f)
+                                else -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                            }
                         )
                     )
                     Text(
@@ -102,6 +109,7 @@ fun MultipleChoiceOptionsDefaultPreview() {
     RecallTheme {
         MultipleChoiceOptions(
             options = options,
+            correctOption = "Opción B",
             selectedOption = "",
             isAnswerCorrect = null,
             onOptionSelected = {}
@@ -116,6 +124,7 @@ fun MultipleChoiceOptionsCorrectPreview() {
     RecallTheme {
         MultipleChoiceOptions(
             options = options,
+            correctOption = "Opción B",
             selectedOption = "Opción B",
             isAnswerCorrect = true,
             onOptionSelected = {}
@@ -130,6 +139,7 @@ fun MultipleChoiceOptionsIncorrectPreview() {
     RecallTheme {
         MultipleChoiceOptions(
             options = options,
+            correctOption = "Opción B",
             selectedOption = "Opción C",
             isAnswerCorrect = false,
             onOptionSelected = {}
