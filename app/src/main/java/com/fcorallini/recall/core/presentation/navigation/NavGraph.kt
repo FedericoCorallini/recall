@@ -6,6 +6,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.fcorallini.recall.generation.presentation.GenerationScreen
 import com.fcorallini.recall.home.presentation.HomeScreen
 import com.fcorallini.recall.list.presentation.ListScreen
 import com.fcorallini.recall.quiz.presentation.QuizScreen
@@ -25,7 +26,8 @@ fun RecallNavGraph(
                 },
                 onNavigateToList = {
                     navController.navigate(Route.List.path)
-                }
+                },
+                onNavigateToGeneration = { navController.navigate(Route.Generation.path) },
             )
         }
 
@@ -38,6 +40,14 @@ fun RecallNavGraph(
                     navController.navigate(Route.Home.path) {
                         popUpTo(Route.Home.path) { inclusive = true }
                     }
+                }
+            )
+        }
+
+        composable(Route.Generation.path) {
+            GenerationScreen(
+                onNavigateToQuiz = { sourceId ->
+                    navController.navigate(Route.Quiz.createRoute(sourceId))
                 }
             )
         }

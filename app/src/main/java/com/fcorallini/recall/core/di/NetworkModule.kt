@@ -2,8 +2,8 @@ package com.fcorallini.recall.core.di
 
 import com.fcorallini.recall.BuildConfig
 import com.fcorallini.recall.core.data.common.ApiKeyProvider
-import com.fcorallini.recall.home.data.openai.OpenAiQuestionGenerator
-import com.fcorallini.recall.home.data.openai.OpenAiService
+import com.fcorallini.recall.generation.data.openai.OpenAiQuestionGenerator
+import com.fcorallini.recall.generation.data.openai.OpenAiService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides

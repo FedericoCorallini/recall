@@ -8,7 +8,7 @@ import com.fcorallini.recall.core.data.db.entity.toDomain
 import com.fcorallini.recall.core.data.db.entity.toEntity
 import com.fcorallini.recall.core.domain.model.Question
 import com.fcorallini.recall.core.domain.model.QuestionStats
-import com.fcorallini.recall.home.data.openai.OpenAiQuestionGenerator
+import com.fcorallini.recall.generation.data.openai.OpenAiQuestionGenerator
 import com.fcorallini.recall.core.domain.repository.QuestionRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

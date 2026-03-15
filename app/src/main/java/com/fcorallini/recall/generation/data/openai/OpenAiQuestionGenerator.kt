@@ -1,4 +1,4 @@
-package com.fcorallini.recall.home.data.openai
+package com.fcorallini.recall.generation.data.openai
 
 import android.util.Log
 import com.fcorallini.recall.core.domain.model.Question

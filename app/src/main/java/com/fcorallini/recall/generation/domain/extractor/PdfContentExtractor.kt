@@ -1,4 +1,4 @@
-package com.fcorallini.recall.home.domain.extractor
+package com.fcorallini.recall.generation.domain.extractor
 
 interface PdfContentExtractor {
     suspend fun extractBytes(uriString: String): ByteArray

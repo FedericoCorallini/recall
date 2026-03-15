@@ -6,4 +6,6 @@ sealed class Route(val path: String) {
     data object Quiz : Route("quiz/{sourceId}") {
         fun createRoute(sourceId: String) = "quiz/$sourceId"
     }
+
+    data object Generation : Route("generation")
 }

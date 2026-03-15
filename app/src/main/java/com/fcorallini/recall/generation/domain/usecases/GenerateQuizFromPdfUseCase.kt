@@ -1,11 +1,11 @@
-package com.fcorallini.recall.home.domain.usecase
+package com.fcorallini.recall.generation.domain.usecases
 
 import com.fcorallini.recall.core.data.common.Result
 import com.fcorallini.recall.core.data.common.TimeProvider
 import com.fcorallini.recall.core.domain.model.PdfSource
-import com.fcorallini.recall.home.domain.extractor.PdfContentExtractor
 import com.fcorallini.recall.core.domain.repository.PdfSourceRepository
 import com.fcorallini.recall.core.domain.repository.QuestionRepository
+import com.fcorallini.recall.generation.domain.extractor.PdfContentExtractor
 import java.util.UUID
 import javax.inject.Inject
 import kotlin.math.min
@@ -53,7 +53,7 @@ class GenerateQuizFromPdfUseCase @Inject constructor(
 
             // Extract and validate text content
             val wordCount = pdfContentExtractor.contWords(uriString)
-            
+
             if (wordCount < MIN_WORDS_FOR_QUIZ) {
                 return Result.Error(
                     Exception(

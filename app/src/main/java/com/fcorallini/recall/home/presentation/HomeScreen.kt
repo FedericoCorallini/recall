@@ -63,26 +63,12 @@ import com.fcorallini.recall.home.presentation.components.GlobalStatsHeader
 fun HomeScreen(
     onNavigateToQuiz: (String) -> Unit,
     onNavigateToList: () -> Unit,
+    onNavigateToGeneration: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    val pdfPickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocument()
-    ) { uri: Uri? ->
-        uri?.let {
-            viewModel.onEvent(HomeEvent.GenerateFromPdf(it.toString()))
-        }
-    }
-
-    // Handle navigation on success
-    LaunchedEffect(state.navigateToQuizId) {
-        state.navigateToQuizId?.let { quizId ->
-            onNavigateToQuiz(quizId)
-            viewModel.onEvent(HomeEvent.ResetState)
-        }
-    }
 
     // Handle error messages
     LaunchedEffect(state.errorMessage) {
@@ -93,11 +79,8 @@ fun HomeScreen(
     }
 
     when {
-        state.isLoading -> {
-            HomeLoadingContent(progress = state.loadingProgress)
-        }
         state.pdfSources.isEmpty() -> {
-            EmptyHomeContent(onUploadPdfClick = { pdfPickerLauncher.launch(arrayOf("application/pdf")) })
+            EmptyHomeContent(onUploadPdfClick = onNavigateToGeneration )
         }
         else -> {
             HomeContent(
@@ -105,7 +88,7 @@ fun HomeScreen(
                 snackbarHostState = snackbarHostState,
                 onNavigateToQuiz = onNavigateToQuiz,
                 onNavigateToList = onNavigateToList,
-                onUploadPdfClick = { pdfPickerLauncher.launch(arrayOf("application/pdf")) },
+                onUploadPdfClick = onNavigateToGeneration,
                 onDeleteSource = { sourceId ->
                     viewModel.onEvent(HomeEvent.DeletePdfSource(sourceId))
                 },
@@ -151,7 +134,7 @@ fun HomeContent(
                     onClick = onUploadPdfClick,
                     icon = { Icon(Icons.Default.Add, contentDescription = "Add PDF") },
                     label = { Text("Add PDF") },
-                    enabled = state.pdfSources.isNotEmpty() && !state.isLoading
+                    enabled = state.pdfSources.isNotEmpty()
                 )
                 NavigationBarItem(
                     selected = false,
@@ -286,112 +269,6 @@ private fun HomeMainContent(
                 )
             }
         }
-    }
-}
-
-
-@Composable
-private fun HomeLoadingContent(
-    progress: Float
-) {
-    val animatedProgress by animateFloatAsState(
-        targetValue = progress,
-        animationSpec = tween(durationMillis = 300, easing = { it }),
-        label = "progress"
-    )
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        contentAlignment = Alignment.Center
-    ) {
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(top = 26.dp)
-        ) {
-            QuizPreviewBackground()
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.7f - animatedProgress)
-                    .background(MaterialTheme.colorScheme.background)
-                    .align(Alignment.BottomCenter)
-            )
-        }
-
-        LoadingBottomPanel(
-            progress = animatedProgress,
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-        )
-    }
-}
-
-@Composable
-private fun LoadingBottomPanel(
-    progress: Float,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-            .background(Color(0xFF1E1D22), shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp))
-            .clip(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp, bottomStart = 20.dp, bottomEnd = 20.dp))
-            .padding(vertical = 22.dp)
-            .height(400.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        // Headline
-        Text(
-            text = "We are creating your quiz",
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface,
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(Modifier.height(28.dp))
-
-        LinearProgressIndicator(
-            progress = { progress },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 32.dp)
-                .height(6.dp),
-            color = MaterialTheme.colorScheme.primary,
-            trackColor = MaterialTheme.colorScheme.surfaceVariant,
-        )
-
-        Spacer(Modifier.height(12.dp))
-
-        // Progress percentage text
-        Text(
-            text = "${(progress * 100).toInt()}%",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.primary,
-            fontWeight = FontWeight.Medium
-        )
-
-        Spacer(Modifier.height(16.dp))
-
-        Text(
-            text = "This could take a few seconds",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.60f)
-        )
-    }
-}
-
-
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-private fun HomeLoadingContentPreview() {
-    RecallTheme {
-        HomeLoadingContent(progress = 0.3f)
     }
 }
 
