@@ -134,8 +134,9 @@ class QuizViewModel @Inject constructor(
                             isAnswerCorrect = false,
                             isSubmitting = true
                         )
+                        delay(1000)
                     }
-                    delay(1500)
+                    delay(500)
                     // Move to next question
                     currentQuestionIndex++
                     showCurrentQuestion()
