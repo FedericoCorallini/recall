@@ -70,9 +70,6 @@ fun HomeScreen(
                 onNavigateToQuiz = onNavigateToQuiz,
                 onNavigateToList = onNavigateToList,
                 onUploadPdfClick = onNavigateToGeneration,
-                onDeleteSource = { sourceId ->
-                    viewModel.onEvent(HomeEvent.DeletePdfSource(sourceId))
-                },
                 onRenameSource = { sourceId, newDisplayName ->
                     viewModel.onEvent(
                         HomeEvent.RenamePdfSource(
@@ -93,7 +90,6 @@ fun HomeContent(
     onNavigateToQuiz: (String) -> Unit,
     onNavigateToList: () -> Unit,
     onUploadPdfClick: () -> Unit,
-    onDeleteSource: (String) -> Unit,
     onRenameSource: (String, String) -> Unit
 ) {
     var renameTarget by remember { mutableStateOf<PdfSource?>(null) }
@@ -121,7 +117,6 @@ fun HomeContent(
             HomeMainContent(
                 state = state,
                 onNavigateToQuiz = onNavigateToQuiz,
-                onDeleteSource = onDeleteSource,
                 onRenameSource = { source ->
                     renameTarget = source
                     renameText = source.displayName
@@ -170,7 +165,6 @@ fun HomeContent(
 private fun HomeMainContent(
     state: HomeState,
     onNavigateToQuiz: (String) -> Unit,
-    onDeleteSource: (String) -> Unit,
     onRenameSource: (PdfSource) -> Unit
 ) {
     // Get the most recent PDF source (first in the list, assuming sorted by createdAt)
@@ -207,7 +201,7 @@ private fun HomeMainContent(
                     source = source,
                     onCardClick = { onNavigateToQuiz(source.id) },
                     onStartPractice = { onNavigateToQuiz(source.id) },
-                    onDeleteClick = { onDeleteSource(source.id) },
+                    onDeleteClick = { },
                     onRenameClick = { onRenameSource(source) },
                     isHomeCard = true,
                     modifier = Modifier
@@ -277,7 +271,6 @@ private fun HomeStatsPreview() {
             onNavigateToQuiz = {},
             onNavigateToList = {},
             onUploadPdfClick = {},
-            onDeleteSource = {},
             onRenameSource = { _, _ -> }
         )
     }

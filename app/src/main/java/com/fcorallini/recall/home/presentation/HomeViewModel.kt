@@ -51,24 +51,12 @@ class HomeViewModel @Inject constructor(
 
     fun onEvent(event: HomeEvent) {
         when (event) {
-            is HomeEvent.DeletePdfSource -> deletePdfSource(event.sourceId)
             is HomeEvent.RenamePdfSource -> renamePdfSource(
                 sourceId = event.sourceId,
                 newDisplayName = event.newDisplayName
             )
             is HomeEvent.ResetState -> _state.update {
                 it.copy(errorMessage = null)
-            }
-        }
-    }
-
-    private fun deletePdfSource(sourceId: String) {
-        viewModelScope.launch {
-            when (val result = deletePdfSourceUseCase(sourceId)) {
-                is Result.Success -> Unit
-                is Result.Error -> _state.update {
-                    it.copy(errorMessage = result.exception.message ?: "Failed to delete source")
-                }
             }
         }
     }
