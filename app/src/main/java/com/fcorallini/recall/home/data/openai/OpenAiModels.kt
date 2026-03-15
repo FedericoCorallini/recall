@@ -42,10 +42,10 @@ data class TextConfig(
 
 @Serializable
 data class TextFormat(
-    val type: String,              // "json_schema" o "text"
-    val name: String? = null,      // requerido cuando type=json_schema
-    val strict: Boolean? = null,   // recomendado cuando type=json_schema
-    val schema: Schema? = null     // <-- requerido cuando type=json_schema
+    val type: String,              // "json_schema" or "text"
+    val name: String? = null,      // required when type=json_schema
+    val strict: Boolean? = null,   // recommended when type=json_schema
+    val schema: Schema? = null     // required when type=json_schema
 )
 
 @Serializable

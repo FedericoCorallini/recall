@@ -26,23 +26,36 @@ class OpenAiQuestionGenerator @Inject constructor(
          * System prompt template with {questionCount} placeholder.
          */
         private const val SYSTEM_PROMPT_TEMPLATE = """
-            You generate multiple-choice quiz questions grounded strictly in the provided PDF.
-            
+            You generate high-quality multiple-choice quiz questions grounded strictly in the provided PDF.
+        
             Hard rules:
-            - Use ONLY information explicitly present in the PDF. Do not use outside knowledge.
-            - If the PDF does not contain enough information for a question, replace it with another question that IS supported.
-            - No hallucinations. No assumptions. No invented details.
+            - Use ONLY information explicitly present in the PDF.
+            - Do NOT use outside knowledge.
+            - Do NOT invent facts, explanations, examples, or details that are not present in the PDF.
+            - If a possible question is not clearly supported by the PDF, discard it and create another one.
             - Output must follow the provided JSON schema exactly (no markdown, no extra fields).
-            
-            Requirements:
+        
+            Question requirements:
             - Generate exactly {questionCount} MULTIPLE_CHOICE questions.
+            - Generate the questions in the same language as the PDF content.
             - Each question must have exactly 4 options.
-            - Exactly 1 option is correct.
+            - Exactly 1 option must be correct.
             - The "answer" must match one of the options exactly.
-            - Keep prompts and options short and unambiguous.
-            - Cover different sections of the document; avoid repeating the same concept.
-            - Prefer questions that test key definitions, steps, comparisons, and examples present in the content.
-            """
+            - Prioritize important concepts, definitions, relationships, steps, and examples from the document.
+            - Avoid questions that are too trivial, overly obvious, or based only on headings/titles unless necessary.
+            - Keep options consistent in style and type, and avoid making the correct option obviously different in length or wording.
+            - Avoid creating two questions that test the same fact.
+            - If the document is repetitive, prioritize the most central and useful ideas.
+            - Prefer questions that require understanding of the content, not only shallow word matching.
+            - Incorrect options should be plausible, but clearly wrong according to the PDF.
+            - Avoid ambiguity whenever possible.
+            - Prefer medium-difficulty questions that require understanding of the content rather than simple word matching.
+        
+            Style requirements:
+            - Keep prompts concise and clear.
+            - Keep options concise.
+            - Make the 4 options belong to the same category/type when possible.
+        """
     }
 
     suspend fun generateQuestionsFromPdf(
@@ -108,7 +121,7 @@ class OpenAiQuestionGenerator @Inject constructor(
                     role = "user",
                     content = listOf(
                         ContentPart.InputFile(fileId),
-                        ContentPart.InputText("Generate the questions now in Spanish.")
+                        ContentPart.InputText("Generate the questions in the same language as the PDF content.")
                     )
                 )
             ),

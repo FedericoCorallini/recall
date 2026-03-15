@@ -111,6 +111,9 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
-    implementation("androidx.compose.foundation:foundation:1.6.0") // o la versión que estés usando
-    implementation("androidx.compose.material:material-icons-extended:1.6.0")
+    implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.material.icons.extended)
+    
+    // Apache PDFBox for Android - PDF text extraction
+    implementation(libs.pdfbox.android)
 }

@@ -68,8 +68,8 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, loadingProgress = 0f, errorMessage = null) }
             
-            // Animate progress from 0 to 0.9 over ~60 seconds
-            val progressDuration = 60000L // 60 seconds
+            // Animate progress from 0 to 0.9 over ~90 seconds
+            val progressDuration = 90000L // 90 seconds
             val startTime = System.currentTimeMillis()
             
             // Launch concurrent job to animate progress while quiz is generating

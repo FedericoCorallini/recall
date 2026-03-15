@@ -15,15 +15,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoStories
-import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.Celebration
 import androidx.compose.material.icons.filled.EmojiEvents
-import androidx.compose.material.icons.filled.Lightbulb
-import androidx.compose.material.icons.filled.MenuBook
-import androidx.compose.material.icons.filled.Psychology
-import androidx.compose.material.icons.filled.PsychologyAlt
 import androidx.compose.material.icons.filled.ThumbUp
-import androidx.compose.material.icons.outlined.Celebration
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -161,7 +155,7 @@ fun SummaryContent(
 private fun SummaryContentPreview() {
     RecallTheme {
         val state = QuizUiState.Summary(
-            correctCount = 90,
+            correctCount = 1,
             totalCount = 10
         )
 

@@ -8,15 +8,26 @@ import androidx.core.net.toUri
 import com.fcorallini.recall.core.data.common.DispatchersProvider
 import com.fcorallini.recall.core.data.common.readBytesFromUri
 import com.fcorallini.recall.home.domain.extractor.PdfContentExtractor
+import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
+import com.tom_roush.pdfbox.pdmodel.PDDocument
+import com.tom_roush.pdfbox.text.PDFTextStripper
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import javax.inject.Inject
+import kotlin.math.min
 
 class PdfContentExtractorImpl @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val dispatchers: DispatchersProvider
 ) : PdfContentExtractor {
+
+    private val WHITESPACE_REGEX = Regex("\\s+")
+
+    init {
+        // Initialize PDFBox resource loader
+        PDFBoxResourceLoader.init(context)
+    }
 
     override suspend fun extractBytes(uriString: String): ByteArray = withContext(dispatchers.io) {
         context.readBytesFromUri(uriString)
@@ -60,6 +71,37 @@ class PdfContentExtractorImpl @Inject constructor(
         } finally {
             renderer?.close()
             pfd?.close()
+        }
+    }
+
+    override suspend fun contWords(uriString: String): Int = withContext(dispatchers.io) {
+        val uri = uriString.toUri()
+
+        try {
+            context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                PDDocument.load(inputStream).use { document ->
+
+                    val stripper = PDFTextStripper().apply {
+                        sortByPosition = true
+                        addMoreFormatting = false
+                        startPage = 1
+                        endPage = min(5, document.numberOfPages)
+                    }
+
+                    val extractedText = stripper.getText(document)
+
+                    extractedText
+                        .replace(WHITESPACE_REGEX, " ")
+                        .trim()
+                        .take(20000)
+
+                    val cleaned = extractedText.replace(WHITESPACE_REGEX, " ").trim()
+                    Regex("\\S+").findAll(cleaned).count()
+                }
+            } ?: throw IOException("Could not open PDF input stream: $uriString")
+
+        } catch (e: Exception) {
+            throw IOException("Failed to extract text from PDF: ${e.message}", e)
         }
     }
 }

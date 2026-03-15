@@ -5,6 +5,7 @@ import com.fcorallini.recall.core.data.common.Result
 import com.fcorallini.recall.core.data.common.TimeProvider
 import com.fcorallini.recall.core.data.db.dao.PdfSourceDao
 import com.fcorallini.recall.core.data.db.dao.PracticeSessionDao
+import com.fcorallini.recall.core.data.db.dao.QuestionDao
 import com.fcorallini.recall.core.data.db.entity.PracticeSessionEntity
 import com.fcorallini.recall.core.data.db.entity.toDomain
 import com.fcorallini.recall.core.data.db.entity.toEntity
@@ -18,6 +19,7 @@ import javax.inject.Inject
 class PdfSourceRepositoryImpl @Inject constructor(
     private val pdfSourceDao: PdfSourceDao,
     private val practiceSessionDao: PracticeSessionDao,
+    private val questionDao: QuestionDao,
     private val timeProvider: TimeProvider,
     private val dispatchers: DispatchersProvider
 ) : PdfSourceRepository {
@@ -86,6 +88,11 @@ class PdfSourceRepositoryImpl @Inject constructor(
     override suspend fun deleteById(id: String): Result<Unit> =
         withContext(dispatchers.io) {
             try {
+                // First delete all related data (cascade delete)
+                questionDao.deleteBySourceId(id)
+                practiceSessionDao.deleteBySourceId(id)
+
+                // Then delete the source
                 val rows = pdfSourceDao.deleteById(id)
                 if (rows == 0) {
                     Result.Error(Exception("PDF Source not found"))

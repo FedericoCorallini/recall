@@ -8,6 +8,7 @@ import com.fcorallini.recall.core.domain.repository.PdfSourceRepository
 import com.fcorallini.recall.core.domain.repository.QuestionRepository
 import java.util.UUID
 import javax.inject.Inject
+import kotlin.math.min
 
 class GenerateQuizFromPdfUseCase @Inject constructor(
     private val pdfContentExtractor: PdfContentExtractor,
@@ -18,9 +19,9 @@ class GenerateQuizFromPdfUseCase @Inject constructor(
     companion object {
         private const val MAX_PDF_SIZE_BYTES = 25L * 1024 * 1024
         private const val MAX_PDF_PAGES = 50
-        private const val MAX_QUESTIONS = 50
-        private const val MIN_QUESTIONS = 10
-        private const val PAGES_PER_QUESTION = 1f
+        private const val MAX_QUESTIONS = 40
+        private const val MIN_QUESTIONS = 5
+        private const val MIN_WORDS_FOR_QUIZ = 50
     }
 
     suspend operator fun invoke(uriString: String): Result<String> {
@@ -39,7 +40,7 @@ class GenerateQuizFromPdfUseCase @Inject constructor(
                 )
             }
 
-            // Get page count and calculate questions
+            // Get page count
             val pageCount = pdfContentExtractor.getPageCount(uriString)
             if (pageCount > MAX_PDF_PAGES) {
                 return Result.Error(
@@ -49,7 +50,22 @@ class GenerateQuizFromPdfUseCase @Inject constructor(
                     )
                 )
             }
-            val questionCount = calculateQuestionCount(pageCount)
+
+            // Extract and validate text content
+            val wordCount = pdfContentExtractor.contWords(uriString)
+            
+            if (wordCount < MIN_WORDS_FOR_QUIZ) {
+                return Result.Error(
+                    Exception(
+                        "This PDF does not contain enough readable text to generate a useful quiz. " +
+                            "Found $wordCount words, minimum required: $MIN_WORDS_FOR_QUIZ. " +
+                            "The PDF might be scanned images or have text as images."
+                    )
+                )
+            }
+
+            // Calculate question count based on text density and pages
+            val questionCount = calculateQuestionCount(pageCount, wordCount)
 
             val sourceId = UUID.randomUUID().toString()
 
@@ -76,17 +92,20 @@ class GenerateQuizFromPdfUseCase @Inject constructor(
         }
     }
 
-    /**
-     * Calculates the number of questions based on page count.
-     * Formula: (pageCount / PAGES_PER_QUESTION), clamped between MIN_QUESTIONS and MAX_QUESTIONS
-     * 
-     * Examples:
-     * - 50 pages → ~14 questions
-     * - 200 pages → ~57 questions  
-     * - 800 pages → 100 questions (capped at max)
-     */
-    private fun calculateQuestionCount(pageCount: Int): Int {
-        val calculated = (pageCount / PAGES_PER_QUESTION).toInt()
-        return calculated.coerceIn(MIN_QUESTIONS, MAX_QUESTIONS)
+    private fun calculateQuestionCount(pageCount: Int, wordCount: Int): Int {
+
+        val wordsPerPage = if (pageCount > 0) wordCount / pageCount else 0
+
+        val byWords = wordCount / 125
+        val byPages = (pageCount * 1.25).toInt()
+
+        val estimate =
+            if (wordsPerPage < 40) {
+                byPages
+            } else {
+                min(byWords, byPages)
+            }
+
+        return estimate.coerceIn(MIN_QUESTIONS, MAX_QUESTIONS)
     }
 }

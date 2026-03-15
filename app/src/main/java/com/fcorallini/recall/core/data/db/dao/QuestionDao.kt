@@ -29,4 +29,7 @@ interface QuestionDao {
 
     @Query("SELECT * FROM questions WHERE id = :id")
     suspend fun getById(id: String): QuestionEntity?
+
+    @Query("DELETE FROM questions WHERE sourceId = :sourceId")
+    suspend fun deleteBySourceId(sourceId: String): Int
 }

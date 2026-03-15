@@ -25,4 +25,7 @@ interface PracticeSessionDao {
         LIMIT 10
     """)
     fun observeBySourceId(sourceId: String): Flow<List<PracticeSessionEntity>>
+
+    @Query("DELETE FROM practice_sessions WHERE sourceId = :sourceId")
+    suspend fun deleteBySourceId(sourceId: String): Int
 }
