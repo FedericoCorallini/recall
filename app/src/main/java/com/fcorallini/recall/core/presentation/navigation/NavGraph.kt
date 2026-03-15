@@ -40,9 +40,12 @@ fun RecallNavGraph(
                     navController.navigate(Route.Home.path) {
                         popUpTo(Route.Home.path) { inclusive = true }
                     }
+                },
+                onNavigateToGeneration = {
+                    navController.navigate(Route.Generation.path)
                 }
             )
-        }
+}
 
         composable(Route.Generation.path) {
             GenerationScreen(
@@ -66,7 +69,9 @@ fun RecallNavGraph(
         ) {
             QuizScreen(
                 onNavigateBack = {
-                    navController.popBackStack()
+                    navController.navigate(Route.Home.path) {
+                        popUpTo(Route.Home.path) { inclusive = true }
+                    }
                 }
             )
         }

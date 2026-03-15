@@ -11,16 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -45,6 +38,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.fcorallini.recall.R
 import com.fcorallini.recall.core.domain.model.PdfSource
 import com.fcorallini.recall.core.domain.model.PracticeSession
+import com.fcorallini.recall.core.presentation.components.RecallBottomNavigationBar
 import com.fcorallini.recall.core.presentation.theme.RecallTheme
 import com.fcorallini.recall.list.presentation.components.PdfSourcesList
 import com.fcorallini.recall.list.presentation.components.PracticeSessionsList
@@ -53,9 +47,10 @@ import com.fcorallini.recall.list.presentation.components.PracticeSessionsList
 fun ListScreen(
     onNavigateToQuiz: (String) -> Unit,
     onNavigateToHome: () -> Unit,
+    onNavigateToGeneration: () -> Unit,
     viewModel: ListViewModel = hiltViewModel()
 ) {
-    val state by viewModel.state.collectAsState()
+val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
     // Handle error messages
@@ -75,7 +70,8 @@ fun ListScreen(
         snackbarHostState = snackbarHostState,
         onNavigateToQuiz = onNavigateToQuiz,
         onNavigateToHome = onNavigateToHome,
-        onSelectSource = { sourceId ->
+        onNavigateToGeneration = onNavigateToGeneration,
+onSelectSource = { sourceId ->
             viewModel.onEvent(ListEvent.SelectSource(sourceId))
         },
         onDeleteSource = { sourceId ->
@@ -99,40 +95,28 @@ fun ListContent(
     snackbarHostState: SnackbarHostState,
     onNavigateToQuiz: (String) -> Unit,
     onNavigateToHome: () -> Unit,
+    onNavigateToGeneration: () -> Unit,
     onSelectSource: (String?) -> Unit,
     onDeleteSource: (String) -> Unit,
     onRenameSource: (String, String) -> Unit
 ) {
-    var renameTarget by remember { mutableStateOf<PdfSource?>(null) }
+var renameTarget by remember { mutableStateOf<PdfSource?>(null) }
     var renameText by remember { mutableStateOf("") }
 
     Scaffold(
         containerColor = Color(0xFF1F2022),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
-            NavigationBar {
-                NavigationBarItem(
-                    selected = false,
-                    onClick = onNavigateToHome,
-                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-                    label = { Text("Home") }
-                )
-                NavigationBarItem(
-                    selected = false,
-                    onClick = { /* Add PDF from List - not primary action here */ },
-                    icon = { Icon(Icons.Default.Add, contentDescription = "Add PDF") },
-                    label = { Text("Add PDF") },
-                    enabled = false
-                )
-                NavigationBarItem(
-                    selected = true,
-                    onClick = { /* Already on List */ },
-                    icon = { Icon(Icons.Default.List, contentDescription = "Quizzes") },
-                    label = { Text("Quizzes") }
-                )
-            }
+            RecallBottomNavigationBar(
+                isHomeSelected = false,
+                isListSelected = true,
+                onHomeClick = onNavigateToHome,
+                onAddPdfClick = onNavigateToGeneration,
+                onListClick = { },
+                isAddPdfEnabled = true
+            )
         }
-    ) { paddingValues ->
+) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -329,8 +313,9 @@ private fun ListContentPreview() {
             snackbarHostState = remember { SnackbarHostState() },
             onNavigateToQuiz = {},
             onNavigateToHome = {},
+            onNavigateToGeneration = {},
             onSelectSource = {},
-            onDeleteSource = {},
+onDeleteSource = {},
             onRenameSource = { _, _ -> }
         )
     }

@@ -7,15 +7,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -43,6 +36,7 @@ import com.fcorallini.recall.core.domain.model.PdfSource
 import com.fcorallini.recall.core.domain.model.GlobalStats
 import com.fcorallini.recall.home.presentation.components.EmptyHomeContent
 import com.fcorallini.recall.list.presentation.components.PdfSourceCard
+import com.fcorallini.recall.core.presentation.components.RecallBottomNavigationBar
 import com.fcorallini.recall.core.presentation.theme.RecallTheme
 import com.fcorallini.recall.home.presentation.components.GlobalStatsHeader
 
@@ -109,29 +103,16 @@ fun HomeContent(
         containerColor = MaterialTheme.colorScheme.background,
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
-            NavigationBar {
-                NavigationBarItem(
-                    selected = true,
-                    onClick = { /* Already on Home */ },
-                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-                    label = { Text("Home") }
-                )
-                NavigationBarItem(
-                    selected = false,
-                    onClick = onUploadPdfClick,
-                    icon = { Icon(Icons.Default.Add, contentDescription = "Add PDF") },
-                    label = { Text("Add PDF") },
-                    enabled = state.pdfSources.isNotEmpty()
-                )
-                NavigationBarItem(
-                    selected = false,
-                    onClick = onNavigateToList,
-                    icon = { Icon(Icons.Default.List, contentDescription = "Quizzes") },
-                    label = { Text("Quizzes") }
-                )
-            }
+            RecallBottomNavigationBar(
+                isHomeSelected = true,
+                isListSelected = false,
+                onHomeClick = { },
+                onAddPdfClick = onUploadPdfClick,
+                onListClick = onNavigateToList,
+                isAddPdfEnabled = state.pdfSources.isNotEmpty()
+            )
         }
-    ) { paddingValues ->
+) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
