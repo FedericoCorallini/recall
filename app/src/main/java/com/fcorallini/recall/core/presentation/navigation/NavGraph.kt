@@ -47,7 +47,13 @@ fun RecallNavGraph(
         composable(Route.Generation.path) {
             GenerationScreen(
                 onNavigateToQuiz = { sourceId ->
+                    navController.popBackStack()
                     navController.navigate(Route.Quiz.createRoute(sourceId))
+                },
+                onNavigateToHome = {
+                    navController.navigate(Route.Home.path) {
+                        popUpTo(Route.Home.path) { inclusive = true }
+                    }
                 }
             )
         }
